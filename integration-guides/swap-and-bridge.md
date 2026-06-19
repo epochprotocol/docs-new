@@ -71,7 +71,7 @@ Reverse quotes are **required** for fixed-price purchases (raffle tickets, exact
 
 ## Approvals
 
-Before or during `solveIntent`, the user may need to approve the input token on the source chain. The SDK and API return approval transactions when needed.
+Before or during `solveIntent`, the user may need to approve the input token on the source chain. The SDK returns approval transactions when needed.
 
 Your UI should:
 

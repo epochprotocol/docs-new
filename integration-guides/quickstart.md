@@ -6,7 +6,7 @@ Get a minimal Epoch integration running in your app.
 
 * Node.js 18+
 * A React (or similar) app with wallet connection — [wagmi](https://wagmi.sh) + [viem](https://viem.sh) recommended
-* Epoch API base URL (contact the Epoch team; test environments are available on request)
+* Epoch SDK `apiBaseUrl` — testnet: `https://testnet-dev.epochprotocol.xyz`
 
 ## Install
 
@@ -21,7 +21,7 @@ import { EpochIntentSDK } from "@epoch-protocol/epoch-intents-sdk";
 import { TaskType } from "@epoch-protocol/epoch-commons-sdk";
 import { useWalletClient, useAccount } from "wagmi";
 
-const EPOCH_API_BASE = "https://your-epoch-api.example.com"; // from Epoch team
+const EPOCH_API_BASE = "https://testnet-dev.epochprotocol.xyz"; // testnet
 
 // Inside your component:
 const { data: walletClient } = useWalletClient();
@@ -98,16 +98,17 @@ if (nonce) {
 
 * [ ] Wallet connected on the **source chain** (where input tokens live)
 * [ ] User has sufficient balance of the input token
-* [ ] Token approval granted if the SDK/API requests it
+* [ ] Token approval granted if the SDK requests it
 * [ ] Quote shown to user before `solveIntent`
 * [ ] Status polled until all transactions complete
 
 ## Testnet
 
-Use testnet chain IDs and tokens from [Chains & Tokens](../appendices/chains-and-tokens.md). Switch your wallet and `apiBaseUrl` to the test environment provided by Epoch.
+Use testnet chain IDs and tokens from [Supported Chains & Tokens](../supported-chains-and-tokens.md). Set `apiBaseUrl` to `https://testnet-dev.epochprotocol.xyz`.
 
 ## Next steps
 
+* [SDK Integration Guide](sdk-integration-guide.md) — full patterns and checklist
 * [SDK Reference](sdk-reference.md) — full method list
 * [Swap & Bridge](swap-and-bridge.md) — forward and reverse quotes
 * [Protocol Interaction](protocol-interaction.md) — cross-chain protocol actions

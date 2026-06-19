@@ -18,7 +18,7 @@ Epoch is the orchestration layer — not a single bridge or DEX.
 
 ### What chains are supported?
 
-See [Chains & Tokens](chains-and-tokens.md). Source chains include Polygon, Optimism, and Arbitrum; destination examples include Base. Contact Epoch for the full list in your environment.
+See [Supported Chains & Tokens](../supported-chains-and-tokens.md). Source chains include Polygon, Optimism, and Arbitrum; destination examples include Base. Contact Epoch for the full list in your environment.
 
 ### Is Epoch custodial?
 
@@ -36,9 +36,9 @@ No. Users connect their own wallets and sign transactions. Epoch orchestrates ex
 
 A standard EOA wallet: MetaMask, Rainbow, Coinbase Wallet, or any WalletConnect-compatible wallet. No smart-wallet deployment is required.
 
-### Do I need the SDK or can I use the API directly?
+### Do I need the SDK?
 
-The **SDK is recommended**. It handles task encoding, quoting, signing, and status polling. Direct API integration is possible for advanced use cases — see [API Reference](../05-api-reference.md).
+**Yes — use the SDK.** It handles task encoding, quoting, signing, and status polling. All integrations should go through `@epoch-protocol/epoch-intents-sdk`. See [Quickstart](../integration-guides/quickstart.md) and [SDK Integration Guide](../integration-guides/sdk-integration-guide.md).
 
 ### How do reverse quotes work?
 
@@ -50,7 +50,7 @@ Cross-chain intents typically complete in **1–10 minutes** depending on path c
 
 ### How do I get testnet access?
 
-Contact the Epoch team for a test API base URL and testnet configuration.
+Use testnet with `apiBaseUrl: https://testnet-dev.epochprotocol.xyz`. See [Supported Chains & Tokens](../supported-chains-and-tokens.md) for testnet chain IDs and token addresses.
 
 ### How do I add my protocol?
 
@@ -78,7 +78,6 @@ Only for certain flows. The quote response includes `resourceLockRequired: true`
 
 ### What should I never expose in my app?
 
-* API keys or tokens (if provided by Epoch for your integration)
 * User private keys
 * Internal Epoch infrastructure URLs
 

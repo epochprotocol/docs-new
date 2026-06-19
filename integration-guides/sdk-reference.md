@@ -12,7 +12,7 @@ Peer dependency: **viem** ^2.x
 
 ```typescript
 new EpochIntentSDK({
-  apiBaseUrl: string;      // Epoch API base URL (no trailing slash)
+  apiBaseUrl: string;      // Epoch allocator URL (no trailing slash)
   walletClient: WalletClient;  // viem wallet client from wagmi or viem
 })
 ```
@@ -131,7 +131,7 @@ Retries a failed intent solve. Contact Epoch for guidance on when retries are sa
 
 ### `getHealthCheck()`
 
-Checks Epoch API availability.
+Checks Epoch service availability.
 
 ```typescript
 getHealthCheck(): Promise<HealthCheckResponse>
@@ -171,21 +171,20 @@ TaskType.ProtocolInteraction   // "protocol-interaction"
 
 ## What the SDK handles internally
 
-You do **not** need to call these directly when using the SDK:
+You do **not** need to implement these steps manually when using the SDK:
 
 | Internal step | Handled by |
 |---------------|------------|
-| `POST /getNonce` | SDK during solve flow |
+| Nonce retrieval | SDK during solve flow |
 | Intent signing | SDK via `walletClient` |
 | Compact data assembly | SDK during quote/solve |
 | Transaction simulation retries | SDK during `solveIntent` |
-
-For direct API integration without the SDK, see [API Reference](../05-api-reference.md).
 
 ---
 
 ## Next steps
 
+- [SDK Integration Guide](./sdk-integration-guide.md)
 - [Swap & Bridge](./swap-and-bridge.md)
 - [Protocol Interaction](./protocol-interaction.md)
 - [Error Handling](./error-handling.md)

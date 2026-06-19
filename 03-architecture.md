@@ -10,21 +10,18 @@ This page describes Epoch from an **integrator's perspective** — what your app
 flowchart LR
   App[YourApplication]
   SDK[EpochIntentSDK]
-  API[EpochAPI]
   Chain[Blockchains]
 
   App --> SDK
-  SDK --> API
-  API --> Chain
+  SDK --> Chain
 ```
 
 Your application integrates with:
 
 1. **`EpochIntentSDK`** — TypeScript SDK (`@epoch-protocol/epoch-intents-sdk`)
-2. **Epoch HTTP API** — REST endpoints under `/api/v1`
-3. **User wallet** — viem/wagmi `walletClient` for signing
+2. **User wallet** — viem/wagmi `walletClient` for signing
 
-You do **not** call Epoch's internal solver or inventory services directly.
+You do **not** need to call Epoch's internal services directly — the SDK handles quoting, signing, submission, and status polling.
 
 ***
 
@@ -48,7 +45,7 @@ Example path for a cross-chain raffle ticket purchase:
 Polygon USDC  →  swap/bridge  →  Base payment token  →  buyTickets()
 ```
 
-You submit a single task; Epoch selects and executes the path. Use `findPathsForIntent` or the quote response to inspect the planned route.
+You submit a single task; Epoch selects and executes the path. Use `getIntentQuote` to inspect the planned route before execution.
 
 ***
 
@@ -87,21 +84,16 @@ Your UI should make this distinction clear — users may need to switch to the s
 
 ## Key payloads
 
-### Intent request (API level)
+### Intent request (SDK level)
 
-When calling the API directly, an intent includes:
+When using the SDK, intent fields are assembled automatically during `solveIntent`. The SDK handles:
 
-| Field        | Description                                 |
-| ------------ | ------------------------------------------- |
-| `sender`     | User's wallet address                       |
-| `approvals`  | Token approvals required on involved chains |
-| `task`       | Base64-encoded task data                    |
-| `constraint` | Optional execution constraints              |
-| `chainIds`   | Chains involved in the intent               |
-| `nonce`      | From `POST /getNonce`                       |
-| `signature`  | User's signature over the intent            |
-
-Using the SDK, these fields are assembled automatically during `solveIntent`.
+| Concern | Handled by SDK |
+| ------- | -------------- |
+| Nonce retrieval | `solveIntent` flow |
+| Intent signing | `walletClient` |
+| Task encoding | `getTaskData` |
+| Approvals | `solveIntent` |
 
 ### Task data (SDK level)
 
@@ -129,7 +121,7 @@ Built via `getTaskData`:
 
 ### Execution status
 
-Polled via `getIntentStatus(userAddress, nonce)` or `GET /getIntentTransactionStatus`. Returns per-transaction status, chain ID, and transaction hash when available.
+Polled via `getIntentStatus(userAddress, nonce)`. Returns per-transaction status, chain ID, and transaction hash when available.
 
 ***
 
@@ -138,7 +130,6 @@ Polled via `getIntentStatus(userAddress, nonce)` or `GET /getIntentTransactionSt
 * Integrators **do not configure paths manually**.
 * Submit a task; Epoch's orchestrator finds compatible routes across supported chains and protocol modules.
 * Use **`getIntentQuote`** to preview the path and amounts before execution.
-* Use **`POST /findPathsForIntent`** for path discovery without executing (API-level).
 
 ***
 
@@ -146,4 +137,4 @@ Polled via `getIntentStatus(userAddress, nonce)` or `GET /getIntentTransactionSt
 
 * [Quickstart](integration-guides/quickstart.md)
 * [Protocol Interaction](integration-guides/protocol-interaction.md)
-* [API Reference](05-api-reference.md)
+* [SDK Reference](integration-guides/sdk-reference.md)

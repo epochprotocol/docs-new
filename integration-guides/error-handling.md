@@ -4,7 +4,9 @@ Guidance for handling errors in Epoch integrations.
 
 ***
 
-## HTTP status codes (API)
+## HTTP status codes
+
+When the SDK encounters server errors, you may see these status codes surfaced via `APIError`:
 
 | Code    | Meaning                                       | Integrator action                               |
 | ------- | --------------------------------------------- | ----------------------------------------------- |
@@ -36,7 +38,7 @@ The SDK throws typed errors:
 | Error class        | Typical cause                                             |
 | ------------------ | --------------------------------------------------------- |
 | `CompactSDKError`  | Invalid parameters, unsupported chain, simulation timeout |
-| `APIError`         | HTTP error from Epoch API                                 |
+| `APIError`         | Server error from Epoch backend                           |
 | `TransactionError` | On-chain transaction failure                              |
 
 Wrap SDK calls in try/catch and surface `error.message` to users (avoid raw stack traces).
@@ -126,4 +128,4 @@ await sdk.solveIntent({
 ## Next steps
 
 * [FAQ](../appendices/faq.md)
-* [API Reference](../05-api-reference.md)
+* [SDK Reference](sdk-reference.md)

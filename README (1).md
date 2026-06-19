@@ -16,32 +16,35 @@ Epoch Protocol lets applications execute **cross-chain intents**: a user signs o
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Understand what Epoch is in 5 minutes | [Overview](./)                                                                                                                               |
 | Learn concepts before integrating     | [Core Concepts](02-core-concepts.md) → [Architecture](03-architecture.md)                                                                    |
-| Build an integration                  | [Quickstart](integration-guides/quickstart.md) → [SDK Reference](integration-guides/sdk-reference.md) → [API Reference](05-api-reference.md) |
+| Build an integration                  | [Quickstart](integration-guides/quickstart.md) → [SDK Integration Guide](integration-guides/sdk-integration-guide.md) → [SDK Reference](integration-guides/sdk-reference.md) |
 
 ***
 
 ## Documentation map
 
 ```
-epoch-docs/
-├── README.md                          ← You are here
-├── DOCUMENTATION_PLAN.md                ← Internal planning notes
-├── 01-overview.md
+docs-new/
+├── README.md
 ├── 02-core-concepts.md
 ├── 03-architecture.md
-├── 04-integration-guides/
+├── supported-chains-and-tokens.md
+├── integration-examples.md
+├── use-cases.md
+├── integration-guides/
 │   ├── quickstart.md
+│   ├── sdk-integration-guide.md
 │   ├── sdk-reference.md
 │   ├── swap-and-bridge.md
 │   ├── protocol-interaction.md
 │   └── error-handling.md
-├── 05-api-reference.md
-└── 06-appendices/
-    ├── chains-and-tokens.md
-    ├── public-contracts.md
-    ├── protocol-identifiers.md
-    ├── faq.md
-    └── changelog.md
+├── appendices/
+│   ├── faq.md
+│   ├── public-contracts.md
+│   └── protocol-identifiers.md
+├── ai-agent-contexts/
+├── litepaper.md
+├── blog.md
+└── links.md
 ```
 
 ***
@@ -53,18 +56,25 @@ epoch-docs/
 | Cross-chain routing and quoting          | UI, wallet connection, user flows      |
 | Intent execution orchestration           | Task definition (what the user wants)  |
 | SDK for task building, quotes, and solve | Chain/token selection, confirmation UX |
-| Status polling API                       | Progress display and error handling    |
+| Status polling via SDK                   | Progress display and error handling    |
 
 ***
 
-## Reference integration
+## Reference integrations
 
-[**Kismet**](https://app.kismet.today) — on-chain raffles on Base. Users fund and buy tickets from Polygon, Optimism, or Arbitrum via Epoch. See [Protocol Interaction](integration-guides/protocol-interaction.md).
+| Project | Description |
+|---------|-------------|
+| [Kismet](https://app.kismet.today) | Production raffles — cross-chain ticket purchases |
+| [compact-demo-epoch](integration-examples.md#compact-demo-epoch) | React swap/bridge UI |
+| [epoch-integration-demo](integration-examples.md#epoch-integration-demo) | Node.js CLI script |
+| [miden-integration-example](integration-examples.md#miden-integration-example) | EVM ⇄ Miden bridge |
+
+See [Integration Examples](integration-examples.md) for details.
 
 ***
 
 ## Support
 
-Contact the Epoch team for API access, production endpoints, and protocol partner onboarding.
+Contact the Epoch team for production SDK access and protocol partner onboarding. See [Links](links.md).
 
-**Last updated:** 2026-06-08
+**Last updated:** 2026-06-19

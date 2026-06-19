@@ -17,19 +17,17 @@ flowchart LR
   User[User]
   App[Your App]
   SDK[Epoch SDK]
-  API[Epoch API]
   Chain[Blockchains]
 
   User --> App
   App --> SDK
-  SDK --> API
-  API --> Chain
+  SDK --> Chain
   Chain --> User
 ```
 
 1. **Your app** builds a task describing the desired outcome (token in, token out, destination chain, optional protocol action).
-2. **The SDK** fetches a quote and coordinates wallet signatures.
-3. **The Epoch API** finds a path, executes transactions, and reports status.
+2. **The SDK** fetches a quote, coordinates wallet signatures, and submits the intent.
+3. **Epoch** finds a path, executes transactions, and reports status via the SDK.
 4. **The user** sees the result on the destination chain.
 
 Users sign with a **standard wallet** (MetaMask, Rainbow, WalletConnect, etc.). No smart-wallet deployment is required.
@@ -52,7 +50,7 @@ Users sign with a **standard wallet** (MetaMask, Rainbow, WalletConnect, etc.). 
 
 Epoch supports a growing set of **source chains** (where the user holds funds) and **destination chains** (where the outcome is delivered).
 
-See the full list in [Chains & Tokens](appendices/chains-and-tokens.md).
+See the full list in [Supported Chains & Tokens](supported-chains-and-tokens.md).
 
 **Mainnet source chains (reference integration):** Polygon, Optimism, Arbitrum One\
 **Testnet source chains:** Ethereum Sepolia, Arbitrum Sepolia\
@@ -78,7 +76,7 @@ This is the recommended pattern for **protocol interaction** integrations. Detai
 
 * **Reverse quotes** are required when the output amount is fixed (e.g. ticket price × quantity). Pass `tokenInAmount: "0"` and set `minTokenOut` to the required output.
 * **Execution time** depends on cross-chain path complexity; poll intent status rather than assuming instant completion.
-* **Supported tokens** vary by chain; see [Chains & Tokens](appendices/chains-and-tokens.md).
+* **Supported tokens** vary by chain; see [Supported Chains & Tokens](supported-chains-and-tokens.md).
 * **New protocols** require Epoch partner onboarding before `extraData` actions are routable.
 
 ***
@@ -88,3 +86,4 @@ This is the recommended pattern for **protocol interaction** integrations. Detai
 * [Core Concepts](02-core-concepts.md) — glossary and intent lifecycle
 * [Architecture](03-architecture.md) — external system view
 * [Quickstart](integration-guides/quickstart.md) — first integration
+* [Integration Examples](integration-examples.md) — reference projects

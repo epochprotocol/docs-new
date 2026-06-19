@@ -25,19 +25,19 @@
 sequenceDiagram
   participant App
   participant SDK
-  participant EpochAPI
+  participant Epoch
   participant Chain
 
   App->>SDK: getTaskData (build task)
   App->>SDK: getIntentQuote
-  SDK->>EpochAPI: quote request
-  EpochAPI-->>SDK: path, amounts, transactions preview
+  SDK->>Epoch: quote request
+  Epoch-->>SDK: path, amounts, transactions preview
   SDK-->>App: quote result
   App->>SDK: solveIntent (user signs in wallet)
-  SDK->>EpochAPI: submit signed intent
-  EpochAPI->>Chain: execute transactions
-  App->>EpochAPI: getIntentTransactionStatus
-  EpochAPI-->>App: status per transaction
+  SDK->>Epoch: submit signed intent
+  Epoch->>Chain: execute transactions
+  App->>SDK: getIntentStatus
+  SDK-->>App: status per transaction
 ```
 
 ### Typical flow
@@ -45,7 +45,7 @@ sequenceDiagram
 1. **Build task** — Use `getTaskData` with token addresses, amounts, destination chain, and task type.
 2. **Get quote** — Call `getIntentQuote` to show the user expected input/output and path.
 3. **Solve** — Call `solveIntent`; the user signs approvals and intent transactions in their wallet.
-4. **Poll status** — Call `getIntentStatus` (SDK) or `GET /getIntentTransactionStatus` (API) until all transactions complete.
+4. **Poll status** — Call `getIntentStatus` until all transactions complete.
 
 ### Quote first vs solve directly
 
@@ -84,10 +84,12 @@ Each task type maps to a 4-byte identifier derived from `keccak256(taskTypeStrin
 * The user signs intent data with their wallet as part of the `solveIntent` flow.
 * The SDK handles nonce retrieval and signature construction internally when using the high-level SDK methods.
 
-### API access
+### SDK configuration
 
-* Integrators call the Epoch HTTP API at a base URL provided by the Epoch team.
-* Contact Epoch for production API endpoints and any partner-specific configuration.
+* Integrators use the **`@epoch-protocol/epoch-intents-sdk`** with an `apiBaseUrl` pointing at the Epoch allocator service.
+* Testnet: `https://testnet-dev.epochprotocol.xyz`
+* Mainnet: `https://epochintents.epochprotocol.xyz`
+* Contact Epoch for production onboarding and protocol partner setup.
 
 ***
 
