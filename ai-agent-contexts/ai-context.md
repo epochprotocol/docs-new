@@ -622,7 +622,7 @@ Each use case follows: user goal → coordination problem → Epoch path → int
 * [Mainnet announcement](https://x.com/0xEpochProtocol/status/2046221555219435983)
 * [Kismet.today](https://kismet.today/) — production dApp
 * [Epoch docs](https://docs.epochprotocol.xyz/)
-* [Integration guide](https://docs.epochprotocol.xyz/technical-guide/integration-guide)
+* [Integration guide](../integration-guides/)
 * [Docs agent Q\&A](https://docs.epochprotocol.xyz/epoch-overview.md?ask=What%20is%20Epoch)
 * [x402](https://www.x402.org/)
 * npm: `@epoch-protocol/epoch-intents-sdk`
