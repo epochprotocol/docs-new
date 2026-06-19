@@ -79,7 +79,7 @@ Always read the allocator address from `GET /health` at runtime — do not rely 
 | KICK   | `0x512Ee6Bd7A4be5Ba4796F15Df080c4D0F89a38eD` |
 | FERB   | `0x145e03A80c19ad1b9d0429d06b6d52707de724A0` |
 
-Full chain/token tables and API details: [Supported Chains & Tokens](../supported-chains-and-tokens.md), [SDK Reference](sdk-reference.md)
+Full chain/token tables and API details: [reference.md](reference.md)
 
 ## Core Intent Flow
 
@@ -292,6 +292,6 @@ import {
 
 ## Additional Resources
 
-- Full API endpoints, error handling, EIP-712 details: [SDK Reference](sdk-reference.md), [Error Handling](error-handling.md)
-- Polished integration guide: [SDK Integration Guide](sdk-integration-guide.md)
+- Full API endpoints, error handling, EIP-712 details: [reference.md](reference.md)
+- SDK source guide: `smallocator/sdk/skills.md`
 - Working demo: `compact-demo-epoch/`
