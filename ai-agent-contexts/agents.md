@@ -1,4 +1,4 @@
-# Agents
+# Agent Integration Guide
 
 Instructions for AI coding agents working in this repository.
 
@@ -6,7 +6,7 @@ Instructions for AI coding agents working in this repository.
 
 1. [`ONE PAGER`](../one-pager.md) — who can plug Epoch in (fastest use-case routing)
 2. [`AI CONTEXT`](ai-context.md) — canonical: identity, status, API, checklist, UC index
-3. [`USE CASEES`](../use-cases.md) — full UC-01–27 write-ups with maturity tags
+3. [`USE CASES`](../use-cases.md) — full UC-01–27 write-ups with maturity tags
 
 Also see [`llms.txt`](https://raw.githubusercontent.com/epochprotocol/epoch-llm-context/refs/heads/main/llms.txt) for the same reading order with raw GitHub URLs.
 
