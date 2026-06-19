@@ -1,66 +1,90 @@
-# Epoch Protocol — External Documentation
+# Overview
 
-Epoch Protocol lets applications execute **cross-chain intents**: a user signs once, and Epoch routes, quotes, and executes swaps, bridges, and on-chain protocol actions across supported networks.
+## What problem Epoch solves
 
-**Audience:** Integrators, protocol partners, and investors.
+Users increasingly hold assets on one chain but want to act on another — swap tokens, bridge value, or call a protocol (buy a ticket, deposit into a pool, etc.). Today that usually means multiple manual steps: bridge, swap, approve, execute.
 
----
+Epoch collapses that into a **single signed intent**. The user connects their wallet, confirms what they want, and Epoch handles routing, quoting, and execution across chains.
 
-## Reading paths
-
-| If you want to… | Start here |
-|-----------------|------------|
-| Understand what Epoch is in 5 minutes | [Overview](./01-overview.md) |
-| Learn concepts before integrating | [Core Concepts](./02-core-concepts.md) → [Architecture](./03-architecture.md) |
-| Build an integration | [Quickstart](./04-integration-guides/quickstart.md) → [SDK Reference](./04-integration-guides/sdk-reference.md) → [API Reference](./05-api-reference.md) |
+Example: a user on Polygon wants to buy raffle tickets on Base. They pick USDC on Polygon, sign once, and receive tickets on Base — without managing bridges or separate swap UIs.
 
 ---
 
-## Documentation map
+## How it works
 
-```
-epoch-docs/
-├── README.md                          ← You are here
-├── DOCUMENTATION_PLAN.md                ← Internal planning notes
-├── 01-overview.md
-├── 02-core-concepts.md
-├── 03-architecture.md
-├── 04-integration-guides/
-│   ├── quickstart.md
-│   ├── sdk-reference.md
-│   ├── swap-and-bridge.md
-│   ├── protocol-interaction.md
-│   └── error-handling.md
-├── 05-api-reference.md
-└── 06-appendices/
-    ├── chains-and-tokens.md
-    ├── public-contracts.md
-    ├── protocol-identifiers.md
-    ├── faq.md
-    └── changelog.md
+```mermaid
+flowchart LR
+  User[User]
+  App[Your App]
+  SDK[Epoch SDK]
+  API[Epoch API]
+  Chain[Blockchains]
+
+  User --> App
+  App --> SDK
+  SDK --> API
+  API --> Chain
+  Chain --> User
 ```
 
----
+1. **Your app** builds a task describing the desired outcome (token in, token out, destination chain, optional protocol action).
+2. **The SDK** fetches a quote and coordinates wallet signatures.
+3. **The Epoch API** finds a path, executes transactions, and reports status.
+4. **The user** sees the result on the destination chain.
 
-## What Epoch provides vs what you build
-
-| Epoch provides | Your app provides |
-|----------------|-------------------|
-| Cross-chain routing and quoting | UI, wallet connection, user flows |
-| Intent execution orchestration | Task definition (what the user wants) |
-| SDK for task building, quotes, and solve | Chain/token selection, confirmation UX |
-| Status polling API | Progress display and error handling |
+Users sign with a **standard wallet** (MetaMask, Rainbow, WalletConnect, etc.). No smart-wallet deployment is required.
 
 ---
 
-## Reference integration
+## Capabilities
 
-**[Kismet](https://app.kismet.today)** — on-chain raffles on Base. Users fund and buy tickets from Polygon, Optimism, or Arbitrum via Epoch. See [Protocol Interaction](./04-integration-guides/protocol-interaction.md).
+| Capability | Description | Example |
+|------------|-------------|---------|
+| Cross-chain swap | Exchange token A on chain X for token B on chain Y | USDC on Polygon → USDC on Base |
+| Cross-chain bridge | Move the same asset across chains | USDC on Arbitrum → USDC on Optimism |
+| Swap + bridge | Combined routing in one intent | WETH on Optimism → USDC on Base |
+| Protocol interaction | Execute an on-chain action after funding | Buy raffle tickets on Base from Polygon |
+| Resource locks (Compact) | Collateral-backed intents via The Compact | Partner flows requiring locked deposits |
 
 ---
 
-## Support
+## Supported networks
 
-Contact the Epoch team for API access, production endpoints, and protocol partner onboarding.
+Epoch supports a growing set of **source chains** (where the user holds funds) and **destination chains** (where the outcome is delivered).
 
-**Last updated:** 2026-06-08
+See the full list in [Chains & Tokens](./06-appendices/chains-and-tokens.md).
+
+**Mainnet source chains (reference integration):** Polygon, Optimism, Arbitrum One  
+**Testnet source chains:** Ethereum Sepolia, Arbitrum Sepolia  
+**Destination (raffles example):** Base, Base Sepolia
+
+Contact the Epoch team to confirm availability for your use case or to request new chains.
+
+---
+
+## Reference integration: Kismet
+
+[Kismet](https://app.kismet.today) is a live application built on Epoch:
+
+- Raffles are deployed on **Base** (mainnet) or **Base Sepolia** (testnet).
+- Users can fund and buy tickets from **Polygon, Optimism, or Arbitrum** (and testnets).
+- The app uses the Epoch SDK with a quote-then-confirm flow for fixed-price ticket purchases.
+
+This is the recommended pattern for **protocol interaction** integrations. Details: [Protocol Interaction Guide](./04-integration-guides/protocol-interaction.md).
+
+---
+
+## Limitations (integration-facing)
+
+- **Reverse quotes** are required when the output amount is fixed (e.g. ticket price × quantity). Pass `tokenInAmount: "0"` and set `minTokenOut` to the required output.
+- **Execution time** depends on cross-chain path complexity; poll intent status rather than assuming instant completion.
+- **Supported tokens** vary by chain; see [Chains & Tokens](./06-appendices/chains-and-tokens.md).
+- **New protocols** require Epoch partner onboarding before `extraData` actions are routable.
+
+---
+
+## Next steps
+
+- [Core Concepts](./02-core-concepts.md) — glossary and intent lifecycle
+- [Architecture](./03-architecture.md) — external system view
+- [Quickstart](./04-integration-guides/quickstart.md) — first integration
