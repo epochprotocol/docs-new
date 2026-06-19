@@ -1,10 +1,18 @@
-# SDK Integration Guide
+---
+name: integrate-epoch
+description: Integrates Epoch Protocol cross-chain intents into JavaScript/TypeScript projects using @epoch-protocol/epoch-intents-sdk (smallocator/sdk). Use when adding Epoch swaps, bridges, deposits, balance checks, or withdrawals; when the user mentions Epoch, smallocator, compact-demo-epoch, or testnet-dev.epochprotocol.xyz.
+---
 
-Add Epoch cross-chain intent flows to any JavaScript/TypeScript project using `@epoch-protocol/epoch-intents-sdk`. Reference implementation: [compact-demo-epoch](../integration-examples.md#compact-demo-epoch).
+# Integrate Epoch
 
-> This guide is adapted from [Integrate Epoch](integrate-epoch.md).
+Add Epoch cross-chain intent flows to any JavaScript/TypeScript project using `@epoch-protocol/epoch-intents-sdk` from `smallocator/sdk`. Reference implementation: `compact-demo-epoch/`.
 
-***
+## When to Use
+
+- User wants Epoch swaps, bridges, or protocol interactions
+- Integrating `@epoch-protocol/epoch-intents-sdk` into React, Next.js, Vite, or Node.js
+- Setting up testnet against `https://testnet-dev.epochprotocol.xyz`
+- Mirroring patterns from `compact-demo-epoch/`
 
 ## Integration Checklist
 
@@ -12,22 +20,22 @@ Add Epoch cross-chain intent flows to any JavaScript/TypeScript project using `@
 - [ ] Install @epoch-protocol/epoch-intents-sdk, viem (peer dep)
 - [ ] Set apiBaseUrl env var (testnet: https://testnet-dev.epochprotocol.xyz)
 - [ ] Configure wallet client (viem or wagmi) on a supported chain
-- [ ] Fetch allocator address via sdk.getHealthCheck() (do not hard-code)
+- [ ] Fetch allocator address from GET /health (do not hard-code)
 - [ ] Implement: getTaskData → getIntentQuote → solveIntent → getIntentStatus
 - [ ] Use testnetGraph/mainnetGraph for token/chain discovery
 ```
-
-***
 
 ## Install
 
 ```bash
 npm install @epoch-protocol/epoch-intents-sdk viem
+# or link locally during development:
+# "@epoch-protocol/epoch-intents-sdk": "file:../smallocator/sdk"
 ```
 
 **Requirements:** Node.js 18+, TypeScript 5+, viem 2.x
 
-***
+**Local monorepo dev** (see `compact-demo-epoch/vite.config.ts`): alias to `smallocator/sdk/dist/index.js` and point `tsconfig` paths at `dist/index.d.ts`.
 
 ## Environment
 
@@ -38,31 +46,52 @@ NEXT_PUBLIC_EPOCH_API_BASE=https://testnet-dev.epochprotocol.xyz  # Next.js
 EPOCH_API_BASE=https://testnet-dev.epochprotocol.xyz        # Node.js
 ```
 
-Always read the allocator address at runtime via `sdk.getHealthCheck()` — do not rely on stale SDK constants.
-
-***
+Always read the allocator address from `GET /health` at runtime — do not rely on stale SDK constants.
 
 ## Testnet Quick Reference
 
-<table><thead><tr><th width="270.38671875">Item</th><th>Value</th></tr></thead><tbody><tr><td>SDK <code>apiBaseUrl</code> (testnet)</td><td><code>https://testnet-dev.epochprotocol.xyz</code></td></tr><tr><td>SDK <code>apiBaseUrl</code> (mainnet)</td><td><code>https://epochintents.epochprotocol.xyz</code></td></tr></tbody></table>
+| Item                     | Value                                        |
+| ------------------------ | -------------------------------------------- |
+| Allocator API (testnet)  | `https://testnet-dev.epochprotocol.xyz`      |
+| Allocator API (mainnet)  | `https://epochintents.epochprotocol.xyz`     |
+| The Compact (all chains) | `0x00000000000000171ede64904551eeDF3C6C9788` |
 
-Full chain and token tables: [Supported Chains & Tokens](../supported-chains-and-tokens.md).
+**Testnet chains** (graph name → viem chain → chain ID):
 
-***
+| Graph name | Network          | Chain ID |
+| ---------- | ---------------- | -------- |
+| Mainnet    | Ethereum Sepolia | 11155111 |
+| Base       | Base Sepolia     | 84532    |
+| Optimism   | Optimism Sepolia | 11155420 |
+| Polygon    | Polygon Amoy     | 80002    |
+
+**Testnet tokens** (18 decimals, same address on Base Sepolia, Optimism Sepolia, Sepolia, Polygon Amoy):
+
+| Symbol | Address                                      |
+| ------ | -------------------------------------------- |
+| USDC   | `0x2BB4FfD7E2c6D432b697554Efd77fA13bdbefd69` |
+| DAI    | `0xc30f1Ce05d1434d484E9A47283aA925fc8A8699a` |
+| USDT   | `0xc04d2869665Be874881133943523723Be5782720` |
+| WETH   | `0x7946dd86eE310D0aC16804A37787289Fa5b88A8A` |
+| WBTC   | `0x9b2a2754a9182fD65360E23afCDf3BeFF51796E9` |
+| PENGU  | `0xEA7dC9849206Ce73b11c465d37b85eC06B11Cf2C` |
+| OSWALD | `0xB588418c0f90F07Bc9587d0050845a90C23C7502` |
+| KICK   | `0x512Ee6Bd7A4be5Ba4796F15Df080c4D0F89a38eD` |
+| FERB   | `0x145e03A80c19ad1b9d0429d06b6d52707de724A0` |
+
+Full chain/token tables and API details: [Supported Chains & Tokens](../supported-chains-and-tokens.md), [SDK Reference](sdk-reference.md)
 
 ## Core Intent Flow
 
 ```
-→ getHealthCheck()
-→ getTaskData({ taskType, intentData })
-→ getIntentQuote({ sponsorAddress, taskTypeString, intentData })
-→ solveIntent({ ...params, quoteResult, onExecutionStatus })
-→ getIntentStatus(userAddress, nonce)
+GET /health
+  → getTaskData({ taskType, intentData })
+  → getIntentQuote({ sponsorAddress, taskTypeString, intentData })
+  → solveIntent({ ...params, quoteResult, onExecutionStatus })
+  → getIntentStatus(userAddress, nonce)
 ```
 
 The SDK handles ERC-20 approval and Compact deposits automatically inside `solveIntent`.
-
-***
 
 ## Vanilla TypeScript (Node / any JS)
 
@@ -132,10 +161,6 @@ if (nonce) {
   console.log(status);
 }
 ```
-
-See [epoch-integration-demo](../integration-examples.md#epoch-integration-demo) for a runnable Node.js script.
-
-***
 
 ## React + wagmi Pattern (from compact-demo-epoch)
 
@@ -215,11 +240,10 @@ await sdk.disableForcedWithdrawal(depositId);
 ### 6. Health / allocator address
 
 ```typescript
-const health = await sdk.getHealthCheck();
-const { allocatorAddress, chainConfig } = health;
+// compact-demo-epoch/src/hooks/useAllocatorAPI.ts
+const response = await fetch(`${apiBaseUrl}/health`);
+const { allocatorAddress, chainConfig } = await response.json();
 ```
-
-***
 
 ## Task Types
 
@@ -228,8 +252,6 @@ const { allocatorAddress, chainConfig } = health;
 | Swap / bridge   | `TaskType.GetTokenOut`         | Cross-chain token output        |
 | Protocol action | `TaskType.ProtocolInteraction` | NFT buy, raffle, lending, etc.  |
 | Deposit only    | `TaskType.Deposit`             | Lock funds without swap mandate |
-
-***
 
 ## Key SDK Exports
 
@@ -248,8 +270,6 @@ import {
 } from "@epoch-protocol/epoch-intents-sdk";
 ```
 
-***
-
 ## compact-demo-epoch File Map
 
 | File                                      | Purpose                                |
@@ -262,20 +282,16 @@ import {
 | `src/components/UserBalancesList.tsx`     | `getDepositedBalances`                 |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow                 |
 
-***
-
 ## Common Mistakes
 
-* Hard-coding allocator address instead of calling `getHealthCheck()`
-* Submitting `solveIntent` without a prior `getIntentQuote`
-* Wrong `destinationChainId` type — pass as **string** (e.g. `"84532"`)
-* Using mainnet `apiBaseUrl` on testnet chains (or vice versa)
-* Forgetting viem `walletClient` must have `.chain` and `.account` set
+- Hard-coding allocator address instead of reading `/health`
+- Submitting `solveIntent` without a prior `getIntentQuote`
+- Wrong `destinationChainId` type — pass as **string** (e.g. `"84532"`)
+- Using mainnet API URL on testnet chains (or vice versa)
+- Forgetting viem `walletClient` must have `.chain` and `.account` set
 
-***
+## Additional Resources
 
-## Next steps
-
-* [SDK Reference](sdk-reference.md) — full method documentation
-* [Error Handling](error-handling.md)
-* [Integration Examples](../integration-examples.md)
+- Full API endpoints, error handling, EIP-712 details: [SDK Reference](sdk-reference.md), [Error Handling](error-handling.md)
+- Polished integration guide: [SDK Integration Guide](sdk-integration-guide.md)
+- Working demo: `compact-demo-epoch/`

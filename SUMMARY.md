@@ -10,6 +10,7 @@
 * [Integration Guides](integration-guides/README.md)
   * [Quickstart](integration-guides/quickstart.md)
   * [SDK Integration Guide](integration-guides/sdk-integration-guide.md)
+  * [Integrate Epoch](integration-guides/integrate-epoch.md)
   * [SDK Reference](integration-guides/sdk-reference.md)
   * [Swap & Bridge Integration](integration-guides/swap-and-bridge.md)
   * [Protocol Interaction Integration](integration-guides/protocol-interaction.md)

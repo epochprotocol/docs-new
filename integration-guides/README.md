@@ -6,6 +6,7 @@ Step-by-step guides for integrating Epoch Protocol using the **`@epoch-protocol/
 |-------|-------------|
 | [Quickstart](quickstart.md) | Minimal integration in your app |
 | [SDK Integration Guide](sdk-integration-guide.md) | Full checklist, patterns, and code examples |
+| [Integrate Epoch](integrate-epoch.md) | Canonical SDK integration source (agent-oriented) |
 | [SDK Reference](sdk-reference.md) | Method-level documentation |
 | [Swap & Bridge](swap-and-bridge.md) | Forward and reverse quotes |
 | [Protocol Interaction](protocol-interaction.md) | Cross-chain protocol actions |
