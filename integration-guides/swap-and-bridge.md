@@ -2,17 +2,17 @@
 
 Use **`TaskType.GetTokenOut`** for cross-chain swaps and bridges where the user receives a target token on a destination chain.
 
----
+***
 
 ## When to use each pattern
 
-| User goal | Task type | Amount pattern |
-|-----------|-----------|----------------|
-| Swap token A → token B on another chain | `GetTokenOut` | Forward quote: set `tokenInAmount` |
-| Bridge same asset to another chain | `GetTokenOut` | Forward quote: set `tokenInAmount` |
+| User goal                                               | Task type                              | Amount pattern                                         |
+| ------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------ |
+| Swap token A → token B on another chain                 | `GetTokenOut`                          | Forward quote: set `tokenInAmount`                     |
+| Bridge same asset to another chain                      | `GetTokenOut`                          | Forward quote: set `tokenInAmount`                     |
 | Receive exact output (e.g. pay exactly 50 USDC on Base) | `GetTokenOut` or `ProtocolInteraction` | Reverse quote: `tokenInAmount: "0"`, set `minTokenOut` |
 
----
+***
 
 ## Forward quote
 
@@ -38,7 +38,7 @@ const { taskTypeString, intentData } = await sdk.getTaskData({
 
 Display `quote.tokenOut` to the user as the expected receive amount.
 
----
+***
 
 ## Reverse quote
 
@@ -67,7 +67,7 @@ const quote = await sdk.getIntentQuote({ sponsorAddress, taskTypeString, intentD
 
 Reverse quotes are **required** for fixed-price purchases (raffle tickets, exact payment amounts).
 
----
+***
 
 ## Approvals
 
@@ -81,39 +81,39 @@ Your UI should:
 
 Ensure the wallet is on the **source chain** before signing.
 
----
+***
 
 ## Displaying quotes
 
 Show the user:
 
-| Field | Label suggestion |
-|-------|------------------|
-| `quote.tokenIn` | "You pay" |
-| `quote.tokenInSymbol` | Token symbol |
-| `quote.tokenOut` | "You receive" |
-| `quote.path` | Optional: "Route" (human-readable summary) |
-| Slippage / fees | If exposed in quote response |
+| Field                 | Label suggestion                           |
+| --------------------- | ------------------------------------------ |
+| `quote.tokenIn`       | "You pay"                                  |
+| `quote.tokenInSymbol` | Token symbol                               |
+| `quote.tokenOut`      | "You receive"                              |
+| `quote.path`          | Optional: "Route" (human-readable summary) |
+| Slippage / fees       | If exposed in quote response               |
 
 Always require explicit user confirmation before calling `solveIntent`.
 
----
+***
 
 ## Chain and token selection
 
-- Source chain: where the user's wallet is connected and input tokens exist.
-- Destination chain: where output tokens are delivered (`destinationChainId`).
-- Use token addresses from [Chains & Tokens](../06-appendices/chains-and-tokens.md).
+* Source chain: where the user's wallet is connected and input tokens exist.
+* Destination chain: where output tokens are delivered (`destinationChainId`).
+* Use token addresses from [Chains & Tokens](../appendices/chains-and-tokens.md).
 
----
+***
 
 ## Resource locks
 
 If `quote.resourceLockRequired === true`, the intent requires Compact collateral. See [Core Concepts](../02-core-concepts.md#resource-locks-compact) and contact Epoch for Compact partner setup.
 
----
+***
 
 ## Next steps
 
-- [Protocol Interaction](./protocol-interaction.md) — combine swap/bridge with on-chain actions
-- [Error Handling](./error-handling.md)
+* [Protocol Interaction](protocol-interaction.md) — combine swap/bridge with on-chain actions
+* [Error Handling](error-handling.md)

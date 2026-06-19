@@ -4,9 +4,9 @@ Get a minimal Epoch integration running in your app.
 
 ## Prerequisites
 
-- Node.js 18+
-- A React (or similar) app with wallet connection — [wagmi](https://wagmi.sh) + [viem](https://viem.sh) recommended
-- Epoch API base URL (contact the Epoch team; test environments are available on request)
+* Node.js 18+
+* A React (or similar) app with wallet connection — [wagmi](https://wagmi.sh) + [viem](https://viem.sh) recommended
+* Epoch API base URL (contact the Epoch team; test environments are available on request)
 
 ## Install
 
@@ -96,19 +96,19 @@ if (nonce) {
 
 ## Checklist
 
-- [ ] Wallet connected on the **source chain** (where input tokens live)
-- [ ] User has sufficient balance of the input token
-- [ ] Token approval granted if the SDK/API requests it
-- [ ] Quote shown to user before `solveIntent`
-- [ ] Status polled until all transactions complete
+* [ ] Wallet connected on the **source chain** (where input tokens live)
+* [ ] User has sufficient balance of the input token
+* [ ] Token approval granted if the SDK/API requests it
+* [ ] Quote shown to user before `solveIntent`
+* [ ] Status polled until all transactions complete
 
 ## Testnet
 
-Use testnet chain IDs and tokens from [Chains & Tokens](../06-appendices/chains-and-tokens.md). Switch your wallet and `apiBaseUrl` to the test environment provided by Epoch.
+Use testnet chain IDs and tokens from [Chains & Tokens](../appendices/chains-and-tokens.md). Switch your wallet and `apiBaseUrl` to the test environment provided by Epoch.
 
 ## Next steps
 
-- [SDK Reference](./sdk-reference.md) — full method list
-- [Swap & Bridge](./swap-and-bridge.md) — forward and reverse quotes
-- [Protocol Interaction](./protocol-interaction.md) — cross-chain protocol actions
-- [Error Handling](./error-handling.md)
+* [SDK Reference](sdk-reference.md) — full method list
+* [Swap & Bridge](swap-and-bridge.md) — forward and reverse quotes
+* [Protocol Interaction](protocol-interaction.md) — cross-chain protocol actions
+* [Error Handling](error-handling.md)

@@ -8,17 +8,17 @@ Epoch is cross-chain intent infrastructure. Users sign once to express what they
 
 ### How is Epoch different from a bridge or DEX aggregator?
 
-| Product | What it does |
-|---------|--------------|
-| **Bridge** | Moves assets between chains |
-| **DEX aggregator** | Finds best swap on one chain |
-| **Epoch** | Composes swap + bridge + protocol action into one signed intent |
+| Product            | What it does                                                    |
+| ------------------ | --------------------------------------------------------------- |
+| **Bridge**         | Moves assets between chains                                     |
+| **DEX aggregator** | Finds best swap on one chain                                    |
+| **Epoch**          | Composes swap + bridge + protocol action into one signed intent |
 
 Epoch is the orchestration layer — not a single bridge or DEX.
 
 ### What chains are supported?
 
-See [Chains & Tokens](./chains-and-tokens.md). Source chains include Polygon, Optimism, and Arbitrum; destination examples include Base. Contact Epoch for the full list in your environment.
+See [Chains & Tokens](chains-and-tokens.md). Source chains include Polygon, Optimism, and Arbitrum; destination examples include Base. Contact Epoch for the full list in your environment.
 
 ### Is Epoch custodial?
 
@@ -28,7 +28,7 @@ No. Users connect their own wallets and sign transactions. Epoch orchestrates ex
 
 [Kismet](https://app.kismet.today) — cross-chain raffle ticket purchases on Base — is a live reference integration.
 
----
+***
 
 ## For integrators
 
@@ -58,11 +58,11 @@ Contact the Epoch team for a test API base URL and testnet configuration.
 2. Document your `extraData` schema and destination contracts.
 3. Contact Epoch for partner onboarding.
 
-See [Protocol Interaction Guide](../04-integration-guides/protocol-interaction.md).
+See [Protocol Interaction Guide](../integration-guides/protocol-interaction.md).
 
 ### What happens if a transaction fails?
 
-Check [Error Handling](../04-integration-guides/error-handling.md). Users can retry with a new quote. Use `retryIntentSolve` only per Epoch guidance.
+Check [Error Handling](../integration-guides/error-handling.md). Users can retry with a new quote. Use `retryIntentSolve` only per Epoch guidance.
 
 ### Can I show the execution path to users?
 
@@ -72,16 +72,16 @@ Yes. The quote response includes a `path` field. Present it as a human-readable 
 
 Only for certain flows. The quote response includes `resourceLockRequired: true` when applicable. Contact Epoch for Compact partner setup.
 
----
+***
 
 ## Security
 
 ### What should I never expose in my app?
 
-- API keys or tokens (if provided by Epoch for your integration)
-- User private keys
-- Internal Epoch infrastructure URLs
+* API keys or tokens (if provided by Epoch for your integration)
+* User private keys
+* Internal Epoch infrastructure URLs
 
 ### What addresses are safe to show users?
 
-Integration-facing contract addresses (raffle factory, protocol contracts) — see [Public Contracts](./public-contracts.md).
+Integration-facing contract addresses (raffle factory, protocol contracts) — see [Public Contracts](public-contracts.md).

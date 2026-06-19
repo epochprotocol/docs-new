@@ -4,30 +4,30 @@ Use **`TaskType.ProtocolInteraction`** when Epoch should execute an **on-chain p
 
 Live example: [Kismet](https://app.kismet.today) — buy raffle tickets on Base using funds from Polygon, Optimism, or Arbitrum.
 
----
+***
 
 ## Supported protocol: raffles
 
-| Action | Description |
-|--------|-------------|
-| `buyTicket` | Approve payment token and call `buyTickets(n, recipient)` on a raffle contract |
-| `createRaffle` | Approve asset token and call `createRaffle(...)` on the raffle factory |
+| Action         | Description                                                                    |
+| -------------- | ------------------------------------------------------------------------------ |
+| `buyTicket`    | Approve payment token and call `buyTickets(n, recipient)` on a raffle contract |
+| `createRaffle` | Approve asset token and call `createRaffle(...)` on the raffle factory         |
 
 Contact Epoch to add new protocols or actions.
 
----
+***
 
 ## Protocol identifiers
 
 Protocol and action are identified by **keccak256 hashes** of their string names:
 
-| Name | Hash |
-|------|------|
-| `raffles` (protocol) | `0x4dbce8120d8053ee8aea0d3534f8f5019eb971dfc14c0686f6422b40ac39337c` |
-| `buyTicket` (action) | `0xa373ddddfee8d2b488aaa8d0eb111c537a84f43f82a2fd27cc3375908a96708e` |
+| Name                    | Hash                                                                 |
+| ----------------------- | -------------------------------------------------------------------- |
+| `raffles` (protocol)    | `0x4dbce8120d8053ee8aea0d3534f8f5019eb971dfc14c0686f6422b40ac39337c` |
+| `buyTicket` (action)    | `0xa373ddddfee8d2b488aaa8d0eb111c537a84f43f82a2fd27cc3375908a96708e` |
 | `createRaffle` (action) | `0x0a35c5f95cd6d0a0b20afc747b32027a1fe1395dca1e7a797211b17f00f4b020` |
 
-See [Protocol Identifiers](../06-appendices/protocol-identifiers.md) for the full table.
+See [Protocol Identifiers](../appendices/protocol-identifiers.md) for the full table.
 
 Compute in TypeScript:
 
@@ -40,7 +40,7 @@ keccak256(toBytes("buyTicket"));    // action hash
 
 Set `protocolHashIdentifier` in `intentData` to the protocol hash.
 
----
+***
 
 ## Buy tickets (reverse quote flow)
 
@@ -107,7 +107,7 @@ if (nonce) {
 }
 ```
 
----
+***
 
 ## Create raffle (fund asset token)
 
@@ -123,18 +123,18 @@ extraDataTypestring: "bytes32 protocol,bytes32 action",
 
 Use forward or reverse quote depending on whether the input or output amount is fixed.
 
----
+***
 
 ## Two-chain UI model
 
-| Layer | Chain | Your UI responsibility |
-|-------|-------|------------------------|
-| Source | Polygon, Optimism, Arbitrum, testnets | Token picker, balance display, wallet on source chain |
-| Destination | Base / Base Sepolia | Raffle/protocol state reads, post-action UX |
+| Layer       | Chain                                 | Your UI responsibility                                |
+| ----------- | ------------------------------------- | ----------------------------------------------------- |
+| Source      | Polygon, Optimism, Arbitrum, testnets | Token picker, balance display, wallet on source chain |
+| Destination | Base / Base Sepolia                   | Raffle/protocol state reads, post-action UX           |
 
 Users sign on the **source chain**. The protocol action executes on the **destination chain** automatically.
 
----
+***
 
 ## Fixed-outcome fields (optional)
 
@@ -153,7 +153,7 @@ extraData: {
 
 Contact Epoch if you need guidance on when these fields are required.
 
----
+***
 
 ## Partner onboarding
 
@@ -164,15 +164,15 @@ To add a new protocol:
 3. Provide destination-chain contract addresses integrators call.
 4. Contact Epoch to register the protocol in Epoch's routing graph.
 
----
+***
 
 ## Public contracts
 
-Raffle factory addresses: [Public Contracts](../06-appendices/public-contracts.md)
+Raffle factory addresses: [Public Contracts](../appendices/public-contracts.md)
 
----
+***
 
 ## Next steps
 
-- [Error Handling](./error-handling.md)
-- [FAQ](../06-appendices/faq.md)
+* [Error Handling](error-handling.md)
+* [FAQ](../appendices/faq.md)

@@ -1,13 +1,17 @@
+---
+hidden: true
+---
+
 # API Reference
 
 Epoch Intent HTTP API — external integrator surface.
 
-**Base path:** `/api/v1`  
+**Base path:** `/api/v1`\
 **Health probes:** `GET /health`, `GET /ready` (mounted at root, not under `/api/v1`)
 
 Contact the Epoch team for your API base URL (test and production environments).
 
----
+***
 
 ## Authentication
 
@@ -17,7 +21,7 @@ When using the SDK, signing is handled automatically via the connected `walletCl
 
 For direct HTTP integration, follow the signing flow documented by Epoch (obtain nonce → sign → submit).
 
----
+***
 
 ## Endpoints
 
@@ -31,7 +35,7 @@ Liveness probe. Returns `{ "status": "ok", "uptime": <seconds> }`.
 
 Readiness probe. Returns `{ "status": "ready" }` or `503` if not ready.
 
----
+***
 
 ### `POST /api/v1/getNonce`
 
@@ -77,7 +81,7 @@ Returns a nonce required before signing and submitting an intent.
 
 **Errors:** `400` validation error
 
----
+***
 
 ### `POST /api/v1/solveIntent`
 
@@ -105,13 +109,13 @@ Submits a signed intent for execution.
 
 **Errors:**
 
-| Code | Meaning |
-|------|---------|
-| `400` | Invalid request |
-| `409` | Intent already processed |
+| Code  | Meaning                    |
+| ----- | -------------------------- |
+| `400` | Invalid request            |
+| `409` | Intent already processed   |
 | `422` | Invalid nonce or signature |
 
----
+***
 
 ### `POST /api/v1/findPathsForIntent`
 
@@ -119,7 +123,7 @@ Discovers possible execution paths without executing. Same request body as `getN
 
 **Response `200`:** Path discovery result with `path`, `success`, `resourceLockRequired`, `transactions`.
 
----
+***
 
 ### `POST /api/v1/checkIfResourceLockRequiredAndGetTransactions`
 
@@ -127,7 +131,7 @@ Planning endpoint: checks whether a resource lock is required and returns transa
 
 Same request/response shape as `solveIntent` (without requiring prior execution).
 
----
+***
 
 ### `GET /api/v1/getIntentTransactionStatus`
 
@@ -135,10 +139,10 @@ Poll execution status for an intent.
 
 **Query parameters:**
 
-| Param | Required | Description |
-|-------|----------|-------------|
-| `user` | Yes | User wallet address (`0x...`) |
-| `nonce` | Yes | Intent nonce from solve response |
+| Param   | Required | Description                      |
+| ------- | -------- | -------------------------------- |
+| `user`  | Yes      | User wallet address (`0x...`)    |
+| `nonce` | Yes      | Intent nonce from solve response |
 
 **Example:**
 
@@ -148,7 +152,7 @@ GET /api/v1/getIntentTransactionStatus?user=0x742d35Cc6634C0532925a3b844Bc9e7595
 
 **Response `200`:** Array of objects with status, `transactionHash`, and `chainId` per transaction step.
 
----
+***
 
 ### `GET /api/v1/getIntents`
 
@@ -156,52 +160,52 @@ Lists intents for a user.
 
 **Query parameters:**
 
-| Param | Required | Description |
-|-------|----------|-------------|
-| `user` | Yes | User wallet address |
-| `nonce` | No | Filter by nonce |
+| Param   | Required | Description         |
+| ------- | -------- | ------------------- |
+| `user`  | Yes      | User wallet address |
+| `nonce` | No       | Filter by nonce     |
 
 **Response `200`:** Map of intent nonce to queued transactions.
 
----
+***
 
 ## Request schemas
 
 ### Approval
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `tokenAddress` | address | ERC-20 token |
-| `spenderAddress` | address | Spender contract |
-| `amount` | string | Allowance amount (wei/smallest unit) |
-| `chainId` | integer | Chain where approval applies |
+| Field            | Type    | Description                          |
+| ---------------- | ------- | ------------------------------------ |
+| `tokenAddress`   | address | ERC-20 token                         |
+| `spenderAddress` | address | Spender contract                     |
+| `amount`         | string  | Allowance amount (wei/smallest unit) |
+| `chainId`        | integer | Chain where approval applies         |
 
 ### Constraint
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `constraintData` | hex | Opaque constraint data |
-| `constraintResponse` | hex | Constraint response |
-| `constraints` | string | Constraint identifier |
-| `optimizationFactor` | number | Optimization weight |
-| `deadline` | integer | Unix timestamp deadline |
-| `triggers` | string | Trigger conditions |
-| `preferredSolvers` | string[] | Preferred solver addresses |
+| Field                | Type      | Description                |
+| -------------------- | --------- | -------------------------- |
+| `constraintData`     | hex       | Opaque constraint data     |
+| `constraintResponse` | hex       | Constraint response        |
+| `constraints`        | string    | Constraint identifier      |
+| `optimizationFactor` | number    | Optimization weight        |
+| `deadline`           | integer   | Unix timestamp deadline    |
+| `triggers`           | string    | Trigger conditions         |
+| `preferredSolvers`   | string\[] | Preferred solver addresses |
 
 ### Intent body (shared fields)
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `sender` | address | Yes | User wallet address |
-| `approvals` | Approval[] | Yes | Token approvals (min 1) |
-| `task` | string | No | Base64-encoded task |
-| `constraint` | Constraint | No | Execution constraints |
-| `proposedFeeRewards` | number/string | No | Fee rewards |
-| `chainIds` | integer[] | Yes | Involved chain IDs |
-| `recurring` | boolean | No | Recurring intent flag |
-| `calldatas` | CalldataItem[] | No | Additional calldata |
+| Field                | Type            | Required | Description             |
+| -------------------- | --------------- | -------- | ----------------------- |
+| `sender`             | address         | Yes      | User wallet address     |
+| `approvals`          | Approval\[]     | Yes      | Token approvals (min 1) |
+| `task`               | string          | No       | Base64-encoded task     |
+| `constraint`         | Constraint      | No       | Execution constraints   |
+| `proposedFeeRewards` | number/string   | No       | Fee rewards             |
+| `chainIds`           | integer\[]      | Yes      | Involved chain IDs      |
+| `recurring`          | boolean         | No       | Recurring intent flag   |
+| `calldatas`          | CalldataItem\[] | No       | Additional calldata     |
 
----
+***
 
 ## Error response
 
@@ -214,28 +218,28 @@ Lists intents for a user.
 }
 ```
 
-See [Error Handling](./04-integration-guides/error-handling.md).
+See [Error Handling](integration-guides/error-handling.md).
 
----
+***
 
 ## Not published externally
 
 These endpoints exist but are not part of the public integrator API:
 
-- `POST /api/v1/registerEvent`
-- `POST /api/v1/echo`
+* `POST /api/v1/registerEvent`
+* `POST /api/v1/echo`
 
 Internal solver, inventory, and allocator admin routes are also not exposed to integrators.
 
----
+***
 
 ## OpenAPI spec
 
 A machine-readable spec is available at `/api/openapi.yaml` on Epoch API deployments (when enabled).
 
----
+***
 
 ## Next steps
 
-- [SDK Reference](./04-integration-guides/sdk-reference.md) — recommended integration path
-- [Quickstart](./04-integration-guides/quickstart.md)
+* [SDK Reference](integration-guides/sdk-reference.md) — recommended integration path
+* [Quickstart](integration-guides/quickstart.md)

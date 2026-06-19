@@ -12,11 +12,11 @@ Epoch Protocol lets applications execute **cross-chain intents**: a user signs o
 
 ## Reading paths
 
-| If you want to…                       | Start here                                                                                                                                         |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Understand what Epoch is in 5 minutes | [Overview](./)                                                                                                                                     |
-| Learn concepts before integrating     | [Core Concepts](02-core-concepts.md) → [Architecture](03-architecture.md)                                                                          |
-| Build an integration                  | [Quickstart](04-integration-guides/quickstart.md) → [SDK Reference](04-integration-guides/sdk-reference.md) → [API Reference](05-api-reference.md) |
+| If you want to…                       | Start here                                                                                                                                   |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Understand what Epoch is in 5 minutes | [Overview](./)                                                                                                                               |
+| Learn concepts before integrating     | [Core Concepts](02-core-concepts.md) → [Architecture](03-architecture.md)                                                                    |
+| Build an integration                  | [Quickstart](integration-guides/quickstart.md) → [SDK Reference](integration-guides/sdk-reference.md) → [API Reference](05-api-reference.md) |
 
 ***
 
@@ -59,7 +59,7 @@ epoch-docs/
 
 ## Reference integration
 
-[**Kismet**](https://app.kismet.today) — on-chain raffles on Base. Users fund and buy tickets from Polygon, Optimism, or Arbitrum via Epoch. See [Protocol Interaction](04-integration-guides/protocol-interaction.md).
+[**Kismet**](https://app.kismet.today) — on-chain raffles on Base. Users fund and buy tickets from Polygon, Optimism, or Arbitrum via Epoch. See [Protocol Interaction](integration-guides/protocol-interaction.md).
 
 ***
 
