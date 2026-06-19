@@ -7,7 +7,7 @@ Working reference implementations for Epoch Protocol integrations. All examples 
 ## epoch-integration-demo
 
 **Type:** Node.js CLI script  
-**Repo:** [`epoch-integration-demo/`](../../epoch-integration-demo/)
+**Repo:** [github.com/epochprotocol/epoch-integration-demo](https://github.com/epochprotocol/epoch-integration-demo)
 
 Minimal headless integration showing the full swap-and-bridge flow without a UI:
 
@@ -33,7 +33,7 @@ Best for: backend scripts, CI smoke tests, understanding the SDK flow before bui
 ## compact-demo-epoch
 
 **Type:** React + Vite + wagmi  
-**Repo:** [`compact-demo-epoch/`](../../compact-demo-epoch/)
+**Repo:** [github.com/Man-Jain/compact-demo-epoch](https://github.com/Man-Jain/compact-demo-epoch)
 
 Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queries, and withdrawals.
 
@@ -55,7 +55,7 @@ Best for: React apps with wallet connection, swap/bridge UI patterns, Compact ba
 
 **Type:** Production dApp — React + Vite + wagmi  
 **App:** [app.kismet.today](https://app.kismet.today)  
-**Repo:** [`chance-chain/`](../../chance-chain/)
+**Repo:** [github.com/Abhimanyu121/chance-chain](https://github.com/Abhimanyu121/chance-chain)
 
 Live on-chain raffles built on Base. Users fund and buy tickets from Polygon, Optimism, or Arbitrum using Epoch cross-chain intents.
 
@@ -75,7 +75,7 @@ See [Protocol Interaction Guide](integration-guides/protocol-interaction.md) for
 ## miden-integration-example
 
 **Type:** React + Vite — EVM ⇄ Miden bridge  
-**Repo:** [`miden-integration-example/`](../../miden-integration-example/)
+**Repo:** [github.com/epochprotocol/miden-integration-example](https://github.com/epochprotocol/miden-integration-example)
 
 Reference dapp for moving value between EVM (Sepolia) and Miden testnet via Epoch intents.
 
@@ -103,7 +103,7 @@ See also [Miden → EVM Lending Integration](integration-guides/miden-lending.md
 
 ## SDK source
 
-The SDK lives in [`smallocator/sdk/`](../../smallocator/sdk/). See [SDK Integration Guide](integration-guides/sdk-integration-guide.md) for the full integration checklist and code patterns.
+The SDK lives in [github.com/epochprotocol/smallocator](https://github.com/epochprotocol/smallocator/tree/dev/sdk). See [SDK Integration Guide](integration-guides/sdk-integration-guide.md) for the full integration checklist and code patterns.
 
 ---
 
