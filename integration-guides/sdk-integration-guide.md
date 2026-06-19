@@ -2,7 +2,7 @@
 
 Add Epoch cross-chain intent flows to any JavaScript/TypeScript project using `@epoch-protocol/epoch-intents-sdk`. Reference implementation: [compact-demo-epoch](../integration-examples.md#compact-demo-epoch).
 
-> This guide is adapted from [Integrate Epoch](integrate-epoch.md).
+> This guide is adapted from [skills.md](skills-md.md).
 
 ***
 
