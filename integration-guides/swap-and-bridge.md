@@ -103,7 +103,7 @@ Always require explicit user confirmation before calling `solveIntent`.
 
 * Source chain: where the user's wallet is connected and input tokens exist.
 * Destination chain: where output tokens are delivered (`destinationChainId`).
-* Use token addresses from [Chains & Tokens](../appendices/chains-and-tokens.md).
+* Use token addresses from [Chains & Tokens](../supported-chains-and-tokens.md).
 
 ***
 
