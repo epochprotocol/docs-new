@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Overview](README.md)
+* [One Pager](one-pager.md)
 * [Core Concepts](02-core-concepts.md)
 * [Architecture](03-architecture.md)
 * [Supported Chains & Tokens](supported-chains-and-tokens.md)

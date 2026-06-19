@@ -1,6 +1,6 @@
 # Use Cases
 
-> Detailed, segment-by-segment companion to [`AI CONTEXT`](ai-agent-contexts/ai-context.md). Read [`AI CONTEXT`](ai-agent-contexts/ai-context.md) first for identity, capabilities, SDK integration, and status. This document expands the use-case catalog (UC-01 … UC-27) into full write-ups.
+> Detailed, segment-by-segment companion to [`AI CONTEXT`](ai-agent-contexts/ai-context.md). Start with [`ONE PAGER`](one-pager.md) for a quick segment overview, then read [`AI CONTEXT`](ai-agent-contexts/ai-context.md) for identity, capabilities, SDK integration, and status. This document expands the use-case catalog (UC-01 … UC-27) into full write-ups.
 
 **Epoch in one line:** a single coordination layer that gives any user access to any financial outcome in one click — from _any source of funds_ (fiat or any token on any chain) to _any destination_ (a position, an RWA, a vault, a stablecoin, a payment) — without the user managing chains, bridges, or protocols. Funds stay non-custodial in the user's smart wallet; the owner signs.
 
