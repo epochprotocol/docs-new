@@ -106,6 +106,8 @@ if (nonce) {
 
 Use testnet chain IDs and tokens from [Supported Chains & Tokens](../supported-chains-and-tokens.md). Set `apiBaseUrl` to `https://testnet-dev.epochprotocol.xyz`.
 
+For testnet ERC-20 mints and a live Compact UI, use the [Epoch User Dashboard](https://userdashboard.epochprotocol.xyz/) ([source](https://github.com/epochprotocol/epoch-user-dashboard)).
+
 ## Next steps
 
 * [SDK Integration Guide](sdk-integration-guide.md) — full patterns and checklist

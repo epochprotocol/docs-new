@@ -73,6 +73,16 @@ See [Integration Examples](integration-examples.md) for details.
 
 ***
 
+## Protocol products
+
+| Product | Description |
+|---------|-------------|
+| [User Dashboard](https://userdashboard.epochprotocol.xyz/) | Compact overview, testnet faucets, forced withdrawals — [source](https://github.com/epochprotocol/epoch-user-dashboard) |
+
+See [Links](links.md) for all official URLs.
+
+***
+
 ## Support
 
 Contact the Epoch team for production SDK access and protocol partner onboarding. See [Links](links.md).

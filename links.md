@@ -4,6 +4,8 @@ icon: globe-pointer
 
 # Links
 
+## Website & community
+
 **Website** - [https://epochprotocol.xyz](https://www.epochprotocol.xyz/)
 
 **Twitter** - [https://x.com/0xEpochProtocol](https://x.com/0xEpochProtocol)
@@ -15,3 +17,11 @@ icon: globe-pointer
 **Medium** - [https://medium.com/@to.epochprotocol](https://medium.com/@to.epochprotocol)
 
 **Discord** - [https://discord.com/invite/Pd4yZmqYjb](https://discord.com/invite/Pd4yZmqYjb)
+
+## Protocol products
+
+**User Dashboard** - [https://userdashboard.epochprotocol.xyz](https://userdashboard.epochprotocol.xyz/)
+
+Official Epoch user dashboard for Compact deposit overview, testnet token faucets, and forced withdrawals.
+
+**User Dashboard (GitHub)** - [https://github.com/epochprotocol/epoch-user-dashboard](https://github.com/epochprotocol/epoch-user-dashboard)

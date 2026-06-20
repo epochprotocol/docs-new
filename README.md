@@ -81,6 +81,18 @@ This is the recommended pattern for **protocol interaction** integrations. Detai
 
 ***
 
+## Protocol products
+
+Epoch ships supporting tools alongside the SDK and allocator:
+
+| Product | Description |
+| ------- | ----------- |
+| [User Dashboard](https://userdashboard.epochprotocol.xyz/) | View Compact deposits, mint testnet tokens, and manage forced withdrawals. [Source](https://github.com/epochprotocol/epoch-user-dashboard). |
+
+See [Links](links.md) for all official URLs.
+
+***
+
 ## Next steps
 
 * [Core Concepts](02-core-concepts.md) — glossary and intent lifecycle

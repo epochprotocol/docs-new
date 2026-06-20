@@ -4,6 +4,8 @@ Chains and tokens available for Epoch cross-chain intents. Use the SDK's `testne
 
 Contact the Epoch team to confirm availability for your environment or to request new chains and tokens.
 
+Need testnet tokens? Mint via the [Epoch User Dashboard](https://userdashboard.epochprotocol.xyz/) faucets tab ([repo](https://github.com/epochprotocol/epoch-user-dashboard)).
+
 ***
 
 ## Testnet environment
