@@ -15,6 +15,7 @@
   * [Swap & Bridge Integration](integration-guides/swap-and-bridge.md)
   * [Protocol Interaction Integration](integration-guides/protocol-interaction.md)
   * [Miden → EVM Lending Integration](integration-guides/miden-lending.md)
+  * [Integration Guide](integration-guides/widget-integration.md)
   * [Error Handling](integration-guides/error-handling.md)
 * [Appendices](appendices/README.md)
   * [FAQ](appendices/faq.md)
