@@ -43,24 +43,24 @@ sequenceDiagram
   App->>Allocator: GET intent status (poll)
 ```
 
-| Layer | Role |
-|-------|------|
-| **Your app** | Builds intent mandate, overrides origin chain to Miden, implements `createMidenP2IDNote` |
-| **Epoch allocator** | Quote (`/checkIfDepositNeeded`), submit (`/compact`), status |
-| **SIO** | Multi-leg routing: `FillerSwapAndBridge` → `protocol-interaction` (deposit) |
-| **Miden note** | User collateral; recipient **must** be allocator P2ID account from `GET /miden-recipient` |
+| Layer               | Role                                                                                      |
+| ------------------- | ----------------------------------------------------------------------------------------- |
+| **Your app**        | Builds intent mandate, overrides origin chain to Miden, implements `createMidenP2IDNote`  |
+| **Epoch allocator** | Quote (`/checkIfDepositNeeded`), submit (`/compact`), status                              |
+| **SIO**             | Multi-leg routing: `FillerSwapAndBridge` → `protocol-interaction` (deposit)               |
+| **Miden note**      | User collateral; recipient **must** be allocator P2ID account from `GET /miden-recipient` |
 
 ---
 
 ## Prerequisites
 
-| Requirement | Notes |
-|-------------|--------|
-| **EVM wallet** | Sponsor address on the intent mandate (`recipient` = same user EVM address) |
-| **Miden wallet** | Must support sending a **public P2IDE** note to a hex account id |
-| **Epoch allocator URL** | Testnet e.g. `http://localhost:3000` or hosted allocator |
-| **Packages** | `@epoch-protocol/epoch-intents-sdk`, `@epoch-protocol/epoch-commons-sdk`, `viem` |
-| **Network** | Testnet only today (dummy-lending + Miden testnet) |
+| Requirement             | Notes                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| **EVM wallet**          | Sponsor address on the intent mandate (`recipient` = same user EVM address)      |
+| **Miden wallet**        | Must support sending a **public P2IDE** note to a hex account id                 |
+| **Epoch allocator URL** | Testnet e.g. `http://localhost:3000` or hosted allocator                         |
+| **Packages**            | `@epoch-protocol/epoch-intents-sdk`, `@epoch-protocol/epoch-commons-sdk`, `viem` |
+| **Network**             | Testnet only today (dummy-lending + Miden testnet)                               |
 
 Install:
 
@@ -73,14 +73,14 @@ npm install @epoch-protocol/epoch-intents-sdk @epoch-protocol/epoch-commons-sdk 
 
 ## Critical constants
 
-| Constant | Value | Meaning |
-|----------|-------|---------|
-| `MIDEN_VIRTUAL_CHAIN_ID` | `999999999` | Origin chain id for **all** Miden→EVM allocator requests |
-| Miden USDC faucet id | `0x0a7d175ed63ec5200fb2ced86f6aa5` | Default testnet faucet (6 decimals) |
-| Miden USDC decimals | **6** | Always use 6 for `tokenInAmount` and P2ID note amount |
-| EVM `tokenIn` sentinel | `0x0000000000000000000000000000000000000000` | Signals Miden source (not native ETH) |
-| `midenNoteType` | `P2IDE` | Reclaimable note; include `midenReclaimHeight` |
-| `protocolHashIdentifier` | `keccak256("dummy-lending")` | See [Protocol hash](#protocol-hash) |
+| Constant                 | Value                                        | Meaning                                                  |
+| ------------------------ | -------------------------------------------- | -------------------------------------------------------- |
+| `MIDEN_VIRTUAL_CHAIN_ID` | `999999999`                                  | Origin chain id for **all** Miden→EVM allocator requests |
+| Miden USDC faucet id     | `0x2458e5446128e6b150b75b8ebd9ce1`           | Default testnet faucet (6 decimals)                      |
+| Miden USDC decimals      | **6**                                        | Always use 6 for `tokenInAmount` and P2ID note amount    |
+| EVM `tokenIn` sentinel   | `0x0000000000000000000000000000000000000000` | Signals Miden source (not native ETH)                    |
+| `midenNoteType`          | `P2IDE`                                      | Reclaimable note; include `midenReclaimHeight`           |
+| `protocolHashIdentifier` | `keccak256("dummy-lending")`                 | See [Protocol hash](#protocol-hash)                      |
 
 **Amount rule:** Miden-side amounts are **always in 6-decimal atomic units** (1 USDC = `1_000_000`). EVM market underlyings may use 18 decimals; Epoch converts internally during quoting. **Do not** scale Miden amounts to 18 decimals yourself.
 
@@ -115,11 +115,11 @@ Example (USDC market on Ethereum Sepolia):
 DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69
 ```
 
-| Field | Description |
-|-------|-------------|
-| Prefix | `DUMMY_LENDING` → routes to dummy-lending earn solver |
-| `chainId` | Chain where the lending market lives (`11155111`, `84532`, …) |
-| `underlyingTokenAddress` | ERC-20 deposited into the vault (lowercase ok) |
+| Field                    | Description                                                   |
+| ------------------------ | ------------------------------------------------------------- |
+| Prefix                   | `DUMMY_LENDING` → routes to dummy-lending earn solver         |
+| `chainId`                | Chain where the lending market lives (`11155111`, `84532`, …) |
+| `underlyingTokenAddress` | ERC-20 deposited into the vault (lowercase ok)                |
 
 `destinationChainId` in the mandate must match the market chain. `outputTokenAddress` / `payAsset` must match the market underlying.
 
@@ -133,15 +133,15 @@ DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69
 
 ### Core `intentData` fields
 
-| Field | Miden deposit value |
-|-------|---------------------|
-| `depositTokenAddress` | `0x0000000000000000000000000000000000000000` |
-| `tokenInAmount` | User input in **Miden 6-dec** atomic units, e.g. `parseUnits("1", 6)` |
-| `outputTokenAddress` | Market underlying ERC-20 |
-| `minTokenOut` | `"0"` (forward quote from user Miden input) |
-| `destinationChainId` | Market chain id string, e.g. `"11155111"` |
-| `protocolHashIdentifier` | `keccak256(toBytes("dummy-lending"))` |
-| `recipient` | User EVM address (sponsor) |
+| Field                    | Miden deposit value                                                   |
+| ------------------------ | --------------------------------------------------------------------- |
+| `depositTokenAddress`    | `0x0000000000000000000000000000000000000000`                          |
+| `tokenInAmount`          | User input in **Miden 6-dec** atomic units, e.g. `parseUnits("1", 6)` |
+| `outputTokenAddress`     | Market underlying ERC-20                                              |
+| `minTokenOut`            | `"0"` (forward quote from user Miden input)                           |
+| `destinationChainId`     | Market chain id string, e.g. `"11155111"`                             |
+| `protocolHashIdentifier` | `keccak256(toBytes("dummy-lending"))`                                 |
+| `recipient`              | User EVM address (sponsor)                                            |
 
 ### `extraData` schema (lending + Miden)
 
@@ -156,19 +156,19 @@ extraData: {
   action: "deposit",
   payAsset: "0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
   midenSourceAccount: "0x<user_miden_account_hex>",
-  midenFaucetId: "0x0a7d175ed63ec5200fb2ced86f6aa5",
+  midenFaucetId: "0x2458e5446128e6b150b75b8ebd9ce1",
   midenNoteType: "P2IDE",
   midenNoteId: "",                    // empty at quote time; filled after note creation
   midenReclaimHeight: "1000",         // blocks until user can reclaim unused note
 }
 ```
 
-| Miden field | When set |
-|-------------|----------|
-| `midenSourceAccount` | Before quote — user's Miden account id (hex) |
-| `midenFaucetId` | Before quote — faucet id for the asset sent in the note |
-| `midenNoteId` | **After** P2IDE creation — SDK writes this into the mandate before `/compact` |
-| `midenReclaimHeight` | Before quote — P2IDE reclaim window |
+| Miden field          | When set                                                                      |
+| -------------------- | ----------------------------------------------------------------------------- |
+| `midenSourceAccount` | Before quote — user's Miden account id (hex)                                  |
+| `midenFaucetId`      | Before quote — faucet id for the asset sent in the note                       |
+| `midenNoteId`        | **After** P2IDE creation — SDK writes this into the mandate before `/compact` |
+| `midenReclaimHeight` | Before quote — P2IDE reclaim window                                           |
 
 ---
 
@@ -198,11 +198,14 @@ Without this, the allocator treats the flow as **Sepolia → Sepolia** instead o
 
 ```typescript
 import { TaskType } from "@epoch-protocol/epoch-commons-sdk";
-import { CollateralType, EpochIntentSDK } from "@epoch-protocol/epoch-intents-sdk";
+import {
+  CollateralType,
+  EpochIntentSDK,
+} from "@epoch-protocol/epoch-intents-sdk";
 import { keccak256, parseUnits, toBytes } from "viem";
 
 const MIDEN_VIRTUAL_CHAIN_ID = 999_999_999;
-const MIDEN_USDC_FAUCET = "0x0a7d175ed63ec5200fb2ced86f6aa5";
+const MIDEN_USDC_FAUCET = "0x2458e5446128e6b150b75b8ebd9ce1";
 const MIDEN_USDC_DECIMALS = 6;
 const EVM_ZERO = "0x0000000000000000000000000000000000000000";
 
@@ -230,7 +233,10 @@ const { taskTypeString, intentData } = await sdk.getTaskData({
   intentData: {
     isNative: false,
     depositTokenAddress: EVM_ZERO,
-    tokenInAmount: parseUnits(depositAmountHuman, MIDEN_USDC_DECIMALS).toString(),
+    tokenInAmount: parseUnits(
+      depositAmountHuman,
+      MIDEN_USDC_DECIMALS,
+    ).toString(),
     outputTokenAddress: underlying,
     minTokenOut: "0",
     destinationChainId,
@@ -302,7 +308,11 @@ const nonce =
 if (nonce) {
   const interval = setInterval(async () => {
     const status = await sdk.getIntentStatus(sponsorAddress, nonce.toString());
-    if (status.some((s) => ["completed", "finalized", "success"].includes(s.status ?? ""))) {
+    if (
+      status.some((s) =>
+        ["completed", "finalized", "success"].includes(s.status ?? ""),
+      )
+    ) {
       clearInterval(interval);
     }
   }, 3000);
@@ -313,11 +323,11 @@ if (nonce) {
 
 The SDK calls your callback **only after** quote confirms `resourceLockRequired`. Parameters:
 
-| Param | Type | Description |
-|-------|------|-------------|
-| `faucetId` | `string` | Normalized hex faucet id |
-| `amount` | `string` | **Atomic Miden units (6 decimals)** — usually `quote.tokenIn` after reverse sizing |
-| `allocatorAccountId` | `string` | From `GET {allocator}/miden-recipient` — **must** be note recipient |
+| Param                | Type     | Description                                                                        |
+| -------------------- | -------- | ---------------------------------------------------------------------------------- |
+| `faucetId`           | `string` | Normalized hex faucet id                                                           |
+| `amount`             | `string` | **Atomic Miden units (6 decimals)** — usually `quote.tokenIn` after reverse sizing |
+| `allocatorAccountId` | `string` | From `GET {allocator}/miden-recipient` — **must** be note recipient                |
 
 Return `{ success: true, noteId: "<note_id_string>" }` or `{ success: false, error: "..." }`.
 
@@ -364,7 +374,7 @@ const earnMiden: EarnMidenAdapter = {
   network="testnet"
   earnMiden={earnMiden}
   onSuccess={({ nonce }) => console.log("deposit settled", nonce)}
-/>
+/>;
 ```
 
 The widget handles origin-chain override, mandate encoding, quote debouncing, and status polling internally.
@@ -373,12 +383,12 @@ The widget handles origin-chain override, mandate encoding, quote debouncing, an
 
 ## Allocator HTTP surface
 
-| Method | Path | Purpose |
-|--------|------|---------|
-| `POST` | `/checkIfDepositNeeded` | Quote only — returns `resourceLockRequired`, `path`, `tokenIn`, `tokenOut` |
-| `GET` | `/miden-recipient` | `{ midenP2IDRecipientAccountId }` — P2IDE payee |
-| `POST` | `/compact` | Submit intent after note creation |
-| `GET` | `/intent/status/:address/:nonce` | Poll execution (nonce is **decimal string** from submit response) |
+| Method | Path                             | Purpose                                                                    |
+| ------ | -------------------------------- | -------------------------------------------------------------------------- |
+| `POST` | `/checkIfDepositNeeded`          | Quote only — returns `resourceLockRequired`, `path`, `tokenIn`, `tokenOut` |
+| `GET`  | `/miden-recipient`               | `{ midenP2IDRecipientAccountId }` — P2IDE payee                            |
+| `POST` | `/compact`                       | Submit intent after note creation                                          |
+| `GET`  | `/intent/status/:address/:nonce` | Poll execution (nonce is **decimal string** from submit response)          |
 
 Quote request body includes `"chainId": "999999999"` for Miden-origin intents.
 
@@ -386,13 +396,13 @@ Quote request body includes `"chainId": "999999999"` for Miden-origin intents.
 
 ## Quote response semantics
 
-| Field | Miden lending deposit |
-|-------|------------------------|
-| `resourceLockRequired` | `true` |
-| `transactions` | `[]` at quote time (no EVM txs until submit) |
-| `tokenIn` | Miden collateral in **6-dec atomic units** (may include routing buffer) |
-| `tokenOut` | Expected amount credited on EVM side (market underlying decimals) |
-| `path` | Multi-leg route, typically `FillerSwapAndBridge` → `protocol-interaction` |
+| Field                  | Miden lending deposit                                                     |
+| ---------------------- | ------------------------------------------------------------------------- |
+| `resourceLockRequired` | `true`                                                                    |
+| `transactions`         | `[]` at quote time (no EVM txs until submit)                              |
+| `tokenIn`              | Miden collateral in **6-dec atomic units** (may include routing buffer)   |
+| `tokenOut`             | Expected amount credited on EVM side (market underlying decimals)         |
+| `path`                 | Multi-leg route, typically `FillerSwapAndBridge` → `protocol-interaction` |
 
 Display `quote.tokenIn` formatted with **6 decimals** to the user before submit.
 
@@ -411,10 +421,10 @@ Display `quote.tokenIn` formatted with **6 decimals** to the user before submit.
 
 ## Two-wallet model
 
-| Wallet | Chain | Responsibility |
-|--------|-------|------------------|
-| **Miden** | Miden testnet | Holds USDC faucet balance; signs P2IDE send |
-| **EVM** | Any (Sepolia, Base Sepolia, …) | Intent sponsor address; **not** used for token approval in Miden flow |
+| Wallet    | Chain                          | Responsibility                                                        |
+| --------- | ------------------------------ | --------------------------------------------------------------------- |
+| **Miden** | Miden testnet                  | Holds USDC faucet balance; signs P2IDE send                           |
+| **EVM**   | Any (Sepolia, Base Sepolia, …) | Intent sponsor address; **not** used for token approval in Miden flow |
 
 The EVM wallet does **not** need to be on the destination market chain for quoting, but must be connected for SDK initialization.
 
@@ -422,13 +432,13 @@ The EVM wallet does **not** need to be on the destination market chain for quoti
 
 ## Local development stack
 
-| Service | Default port |
-|---------|----------------|
-| smallocator (allocator) | `3000` |
-| epoch-sio | `8080` |
-| dex-solver | `3002` |
-| dummy-lending-solver | `3012` |
-| dummy-lending positions API | `4024` |
+| Service                     | Default port |
+| --------------------------- | ------------ |
+| smallocator (allocator)     | `3000`       |
+| epoch-sio                   | `8080`       |
+| dex-solver                  | `3002`       |
+| dummy-lending-solver        | `3012`       |
+| dummy-lending positions API | `4024`       |
 
 Point the widget / SDK at `api.baseUrl: http://localhost:3000`.
 
@@ -436,14 +446,14 @@ Point the widget / SDK at `api.baseUrl: http://localhost:3000`.
 
 ## Common failures
 
-| Symptom | Likely cause |
-|---------|----------------|
-| Route shows Sepolia → Sepolia | Missing `walletClient.chain.id = 999999999` override |
-| P2ID amount ~10¹² USDC | Miden amount expressed in 18-dec instead of 6-dec |
-| `NO_QUOTE_AVAILABLE` / `undefined.includes` | Wrong earn solver (`lending-solver` vs `dummy-lending-solver`) |
-| Note validation failed | P2IDE recipient ≠ `/miden-recipient` account |
-| Stuck after quote, no Miden tx | Expected — user must confirm submit; note is created in `solveIntent` |
-| `NO_VALID_TREASURY_CANDIDATE` | EVM inventory/treasury not funded on destination chain |
+| Symptom                                     | Likely cause                                                          |
+| ------------------------------------------- | --------------------------------------------------------------------- |
+| Route shows Sepolia → Sepolia               | Missing `walletClient.chain.id = 999999999` override                  |
+| P2ID amount ~10¹² USDC                      | Miden amount expressed in 18-dec instead of 6-dec                     |
+| `NO_QUOTE_AVAILABLE` / `undefined.includes` | Wrong earn solver (`lending-solver` vs `dummy-lending-solver`)        |
+| Note validation failed                      | P2IDE recipient ≠ `/miden-recipient` account                          |
+| Stuck after quote, no Miden tx              | Expected — user must confirm submit; note is created in `solveIntent` |
+| `NO_VALID_TREASURY_CANDIDATE`               | EVM inventory/treasury not funded on destination chain                |
 
 ---
 
