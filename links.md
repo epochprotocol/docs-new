@@ -18,6 +18,10 @@ icon: globe-pointer
 
 **Discord** - [https://discord.com/invite/Pd4yZmqYjb](https://discord.com/invite/Pd4yZmqYjb)
 
+## Contact Us
+
+**Telegram** - [http://t.me/AkshitOstwal](http://t.me/AkshitOstwal)
+
 ## Protocol products
 
 **User Dashboard** - [https://userdashboard.epochprotocol.xyz](https://userdashboard.epochprotocol.xyz/)

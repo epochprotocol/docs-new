@@ -2,7 +2,7 @@
 
 Chains and tokens available for Epoch cross-chain intents. Use the SDK's `testnetGraph` and `mainnetGraph` exports for programmatic discovery, or reference the tables below.
 
-For additional chains or tokens beyond the public mainnet set below, [contact the Epoch team](https://epochprotocol.xyz/#contact).
+For additional chains or tokens beyond the public mainnet set below, [contact the Epoch team](https://epochprotocol.xyz/#contact) or reach out on [Telegram](http://t.me/AkshitOstwal).
 
 Need testnet tokens? Mint via the [Epoch User Dashboard](https://userdashboard.epochprotocol.xyz/) faucets tab ([repo](https://github.com/epochprotocol/epoch-user-dashboard)).
 
@@ -54,7 +54,7 @@ The following tokens are currently supported on **public mainnet** across all su
 | WETH   |
 | DAI    |
 
-Need additional tokens? [Contact the Epoch team](https://epochprotocol.xyz/#contact).
+Need additional tokens? [Contact the Epoch team](https://epochprotocol.xyz/#contact) or on [Telegram](http://t.me/AkshitOstwal).
 
 ***
 
@@ -74,7 +74,7 @@ See [SDK Integration Guide](integration-guides/sdk-integration-guide.md) and [co
 
 ## Requesting new chains or tokens
 
-The public mainnet set above covers Base, Arbitrum, Polygon, Optimism and the tokens USDC, USDT, WETH, and DAI. For anything beyond that, [contact the Epoch team](https://epochprotocol.xyz/#contact) with:
+The public mainnet set above covers Base, Arbitrum, Polygon, Optimism and the tokens USDC, USDT, WETH, and DAI. For anything beyond that, [contact the Epoch team](https://epochprotocol.xyz/#contact) or on [Telegram](http://t.me/AkshitOstwal) with:
 
 * Chain name and chain ID
 * Token contract addresses and decimals
