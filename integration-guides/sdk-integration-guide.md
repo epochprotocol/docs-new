@@ -42,7 +42,7 @@ Always read the allocator address at runtime via `sdk.getHealthCheck()` — do n
 
 ***
 
-## Testnet Quick Reference
+## APIs Quick Reference
 
 <table><thead><tr><th width="270.38671875">Item</th><th>Value</th></tr></thead><tbody><tr><td>SDK <code>apiBaseUrl</code> (testnet)</td><td><code>https://testnet-dev.epochprotocol.xyz</code></td></tr><tr><td>SDK <code>apiBaseUrl</code> (mainnet)</td><td><code>https://api.epochprotocol.xyz</code></td></tr></tbody></table>
 
