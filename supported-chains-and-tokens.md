@@ -2,7 +2,7 @@
 
 Chains and tokens available for Epoch cross-chain intents. Use the SDK's `testnetGraph` and `mainnetGraph` exports for programmatic discovery, or reference the tables below.
 
-Contact the Epoch team to confirm availability for your environment or to request new chains and tokens.
+For additional chains or tokens beyond the public mainnet set below, [contact the Epoch team](https://epochprotocol.xyz/#contact).
 
 Need testnet tokens? Mint via the [Epoch User Dashboard](https://userdashboard.epochprotocol.xyz/) faucets tab ([repo](https://github.com/epochprotocol/epoch-user-dashboard)).
 
@@ -34,14 +34,27 @@ These tokens use **18 decimals** and share the same contract address on Base Sep
 | -------------------------- | -------------------------------- |
 | SDK `apiBaseUrl` (mainnet) | `https://api.epochprotocol.xyz/` |
 
-### Mainnet Chains
+### Mainnet chains
 
 | Chain        | Chain ID |
 | ------------ | -------- |
+| Base         | 8453     |
+| Arbitrum One | 42161    |
 | Polygon      | 137      |
 | Optimism     | 10       |
-| Arbitrum One | 42161    |
-| Base         | 8453     |
+
+### Mainnet tokens
+
+The following tokens are currently supported on **public mainnet** across all supported chains above:
+
+| Symbol |
+| ------ |
+| USDC   |
+| USDT   |
+| WETH   |
+| DAI    |
+
+Need additional tokens? [Contact the Epoch team](https://epochprotocol.xyz/#contact).
 
 ***
 
@@ -61,7 +74,7 @@ See [SDK Integration Guide](integration-guides/sdk-integration-guide.md) and [co
 
 ## Requesting new chains or tokens
 
-Contact the Epoch team with:
+The public mainnet set above covers Base, Arbitrum, Polygon, Optimism and the tokens USDC, USDT, WETH, and DAI. For anything beyond that, [contact the Epoch team](https://epochprotocol.xyz/#contact) with:
 
 * Chain name and chain ID
 * Token contract addresses and decimals

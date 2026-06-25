@@ -18,7 +18,7 @@ Epoch is the orchestration layer — not a single bridge or DEX.
 
 ### What chains are supported?
 
-See [Supported Chains & Tokens](../supported-chains-and-tokens.md). Source chains include Polygon, Optimism, and Arbitrum; destination examples include Base. Contact Epoch for the full list in your environment.
+See [Supported Chains & Tokens](../supported-chains-and-tokens.md). Public mainnet supports Base, Arbitrum, Polygon, and Optimism with USDC, USDT, WETH, and DAI. For additional chains or tokens, [contact the Epoch team](https://epochprotocol.xyz/#contact).
 
 ### Is Epoch custodial?
 
