@@ -1,4 +1,4 @@
-# Integration Guide
+# Widget Integration Guide
 
 How to embed `EpochIntentWidget` in your React app. You render one component and it owns the full flow: wallet-connect → token pick → quote → sign → settle.
 
