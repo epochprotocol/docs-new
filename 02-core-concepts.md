@@ -88,7 +88,7 @@ Each task type maps to a 4-byte identifier derived from `keccak256(taskTypeStrin
 
 * Integrators use the **`@epoch-protocol/epoch-intents-sdk`** with an `apiBaseUrl` pointing at the Epoch allocator service.
 * Testnet: `https://testnet-dev.epochprotocol.xyz`
-* Mainnet: `https://epochintents.epochprotocol.xyz`
+* Mainnet: `https://api.epochprotocol.xyz`
 * Contact Epoch for production onboarding and protocol partner setup.
 
 ***

@@ -53,7 +53,7 @@ Always read the allocator address from `GET /health` at runtime — do not rely 
 | Item                     | Value                                        |
 | ------------------------ | -------------------------------------------- |
 | Allocator API (testnet)  | `https://testnet-dev.epochprotocol.xyz`      |
-| Allocator API (mainnet)  | `https://epochintents.epochprotocol.xyz`     |
+| Allocator API (mainnet)  | `https://api.epochprotocol.xyz`     |
 | The Compact (all chains) | `0x00000000000000171ede64904551eeDF3C6C9788` |
 
 **Testnet chains** (graph name → viem chain → chain ID):
