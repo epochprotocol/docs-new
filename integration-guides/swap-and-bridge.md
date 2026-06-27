@@ -99,6 +99,36 @@ Always require explicit user confirmation before calling `solveIntent`.
 
 ***
 
+## Routing & liquidity options
+
+Optional `routingAndLiquidityOptions` lets integrators choose **how** the swap is filled:
+
+| Preset | When to use |
+|--------|-------------|
+| `any` | Default — best quote across all solvers |
+| `filler-single-transaction` | Prefer Epoch filler liquidity (single wallet flow) |
+| `external-multi-transactions` | External aggregators only (multi-step signing) |
+| `custom` | Pin specific solver address(es) |
+
+Pass the **same** options to `getIntentQuote` and `solveIntent`:
+
+```typescript
+const routingAndLiquidityOptions = { preset: "filler-single-transaction" as const };
+
+const quote = await sdk.getIntentQuote({
+  sponsorAddress,
+  taskTypeString,
+  intentData,
+  routingAndLiquidityOptions,
+});
+
+await sdk.solveIntent({ ...params, quoteResult: quote, routingAndLiquidityOptions });
+```
+
+See [SDK Reference](./sdk-reference.md#getintentquoteparams).
+
+***
+
 ## Chain and token selection
 
 * Source chain: where the user's wallet is connected and input tokens exist.

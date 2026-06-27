@@ -43,7 +43,7 @@ Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queri
 | `src/config/web3.ts` | Token/chain discovery from SDK graphs |
 | `src/config/api.ts` | `VITE_API_BASE_URL` helper |
 | `src/hooks/useAllocatorAPI.ts` | Health check, allocator address |
-| `src/pages/BalancePage.tsx` | Full swap flow: quote → solve → status |
+| `src/pages/BalancePage.tsx` | Full swap flow: routing preset picker, quote → solve → status |
 | `src/components/UserBalancesList.tsx` | `getDepositedBalances` |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow |
 

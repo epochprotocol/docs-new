@@ -240,6 +240,20 @@ api={{ baseUrl: 'https://allocator.example.com', positionsBaseUrl: 'https://posi
 
 By default the destination is **pinned**. Set `lockDestinationToken={false}` to let the user re-pick it. Scope the source side with `sourceChainIds`, `defaultSourceChainId`, `defaultSourceTokenAddress`, `sourceTokenFilter`.
 
+**Routing & liquidity** — restrict which solver paths are quoted (pay, swap, and earn):
+
+```tsx
+<EpochIntentWidget
+  isOpen={open} onClose={close}
+  api={{ baseUrl }}
+  mode="pay"
+  routingAndLiquidityOptions={{ preset: "filler-single-transaction" }}
+  intent={{ /* … */ }}
+/>
+```
+
+Presets: `any`, `filler-single-transaction`, `external-multi-transactions`, `custom` (with `solvers: [\`0x…\`]`). Use the same value for quote and submit — the widget forwards it to the SDK automatically.
+
 ### Swap
 
 `mode="swap"` — classic exchange UX; the user picks **both** sides. Provide an initial destination intent (`lockDestinationToken` is forced off internally so the user can always change what they receive):
