@@ -26,6 +26,12 @@ These tokens use **18 decimals** and share the same contract address on Base Sep
 
 <table><thead><tr><th width="148.71484375">Symbol</th><th>Address</th></tr></thead><tbody><tr><td>USDC</td><td><code>0x2BB4FfD7E2c6D432b697554Efd77fA13bdbefd69</code></td></tr><tr><td>DAI</td><td><code>0xc30f1Ce05d1434d484E9A47283aA925fc8A8699a</code></td></tr><tr><td>USDT</td><td><code>0xc04d2869665Be874881133943523723Be5782720</code></td></tr><tr><td>WETH</td><td><code>0x7946dd86eE310D0aC16804A37787289Fa5b88A8A</code></td></tr><tr><td>WBTC</td><td><code>0x9b2a2754a9182fD65360E23afCDf3BeFF51796E9</code></td></tr><tr><td>PENGU</td><td><code>0xEA7dC9849206Ce73b11c465d37b85eC06B11Cf2C</code></td></tr><tr><td>OSWALD</td><td><code>0xB588418c0f90F07Bc9587d0050845a90C23C7502</code></td></tr><tr><td>KICK</td><td><code>0x512Ee6Bd7A4be5Ba4796F15Df080c4D0F89a38eD</code></td></tr><tr><td>FERB</td><td><code>0x145e03A80c19ad1b9d0429d06b6d52707de724A0</code></td></tr></tbody></table>
 
+#### Miden testnet tokens
+
+Tokens on **Miden** (chain ID `999999999`) are **fungible faucet accounts** and use **6 decimals** (not 18). The faucet account ID below is the token identifier used in intents. Mint them to your Miden account via the [User Dashboard](https://userdashboard.epochprotocol.xyz/) faucets tab. Account IDs are accepted in hex (`0x…`) or bech32 (`mtst1…`) form.
+
+<table><thead><tr><th width="148.71484375">Symbol</th><th>Faucet ID (hex)</th></tr></thead><tbody><tr><td>USDC</td><td><code>0x8ddb61e056105cf119634d919be743</code></td></tr><tr><td>DAI</td><td><code>0xd162796b525d6c517a0d2a332413d4</code></td></tr><tr><td>USDT</td><td><code>0xd2f049a23e9068715a2def9842673f</code></td></tr><tr><td>WETH</td><td><code>0xd4510f4a85b542b144b84b04670ae6</code></td></tr><tr><td>WBTC</td><td><code>0xb7856af9c04fd3b124308caf69c9f4</code></td></tr></tbody></table>
+
 ***
 
 ## Mainnet environment
