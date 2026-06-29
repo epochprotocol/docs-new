@@ -68,7 +68,7 @@ getIntentQuote(params: {
 | Preset | UX | Behavior |
 |--------|-----|----------|
 | `{ preset: "any" }` | Best quote (default) | All registered solvers |
-| `{ preset: "filler-single-transaction" }` | Single-transaction flow | Epoch filler treasury only |
+| `{ preset: "filler-single-transaction" }` | One user transaction; seamless end-to-end execution | Epoch filler treasury only — protocol interactions bundled behind a single signature |
 | `{ preset: "external-multi-transactions" }` | Multi-transaction flow | External aggregators only |
 | `{ preset: "custom"; solvers: [\`0x…\`] }` | Pin specific solver(s) | Explicit solver address(es) |
 

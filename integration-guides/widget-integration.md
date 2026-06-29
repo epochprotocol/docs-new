@@ -252,7 +252,7 @@ By default the destination is **pinned**. Set `lockDestinationToken={false}` to 
 />
 ```
 
-Presets: `any`, `filler-single-transaction`, `external-multi-transactions`, `custom` (with `solvers: [\`0x…\`]`). Use the same value for quote and submit — the widget forwards it to the SDK automatically.
+Presets: `any`, `filler-single-transaction` (one user transaction with seamless end-to-end execution — protocol interactions handled behind the scenes), `external-multi-transactions`, `custom` (with `solvers: [\`0x…\`]`). Use the same value for quote and submit — the widget forwards it to the SDK automatically.
 
 ### Swap
 

@@ -106,7 +106,7 @@ Optional `routingAndLiquidityOptions` lets integrators choose **how** the swap i
 | Preset | When to use |
 |--------|-------------|
 | `any` | Default — best quote across all solvers |
-| `filler-single-transaction` | Prefer Epoch filler liquidity (single wallet flow) |
+| `filler-single-transaction` | Prefer Epoch filler liquidity — the user signs **one** transaction for seamless end-to-end execution (protocol interactions are handled behind the scenes) |
 | `external-multi-transactions` | External aggregators only (multi-step signing) |
 | `custom` | Pin specific solver address(es) |
 

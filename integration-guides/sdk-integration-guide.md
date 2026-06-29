@@ -137,7 +137,7 @@ See [epoch-integration-demo](../integration-examples.md#epoch-integration-demo) 
 
 ### Routing & liquidity options (optional)
 
-Use `routingAndLiquidityOptions` when you want to control **how** the swap is filled — single-transaction filler liquidity vs multi-transaction external routing vs best-of-all.
+Use `routingAndLiquidityOptions` when you want to control **how** the swap is filled — single-transaction filler liquidity (one user signature, seamless end-to-end execution including protocol interactions) vs multi-transaction external routing vs best-of-all.
 
 ```typescript
 import type { RoutingAndLiquidityOptions } from "@epoch-protocol/epoch-intents-sdk";
@@ -163,7 +163,7 @@ await sdk.solveIntent({
 });
 ```
 
-Presets: `any` (default), `filler-single-transaction`, `external-multi-transactions`, `custom` (with `solvers: [\`0x…\`]`). See [SDK Reference](./sdk-reference.md#getintentquoteparams).
+Presets: `any` (default), `filler-single-transaction` (one transaction, seamless end-to-end execution for the user — protocol interactions handled by the filler), `external-multi-transactions`, `custom` (with `solvers: [\`0x…\`]`). See [SDK Reference](./sdk-reference.md#getintentquoteparams).
 
 ***
 
