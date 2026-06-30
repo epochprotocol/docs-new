@@ -63,9 +63,6 @@ Always read the allocator address from `GET /health` at runtime — do not rely 
 | Mainnet    | Ethereum Sepolia | 11155111 |
 | Base       | Base Sepolia     | 84532    |
 | Optimism   | Optimism Sepolia | 11155420 |
-| Polygon    | Polygon Amoy     | 80002    |
-
-**Testnet tokens** (18 decimals, same address on Base Sepolia, Optimism Sepolia, Sepolia, Polygon Amoy):
 
 | Symbol | Address                                      |
 | ------ | -------------------------------------------- |
@@ -173,7 +170,6 @@ import {
   sepolia,
   baseSepolia,
   optimismSepolia,
-  polygonAmoy,
   base,
   optimism,
   polygon,
@@ -184,7 +180,6 @@ export const chains = [
   sepolia,
   baseSepolia,
   optimismSepolia,
-  polygonAmoy,
   polygon,
   arbitrum,
   base,
