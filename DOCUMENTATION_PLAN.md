@@ -326,7 +326,7 @@ Per endpoint:
 Verified from the Kismet reference integration (`chance-chain/src/lib/epoch.ts`):
 
 * **Source chains (mainnet):** Polygon (137), Optimism (10), Arbitrum (42161)
-* **Source chains (testnet):** Ethereum Sepolia (11155111), Arbitrum Sepolia (421614)
+* **Source chains (testnet):** Ethereum Sepolia (11155111), Base Sepolia (84532), Optimism Sepolia (11155420)
 * **Destination (raffles):** Base (8453), Base Sepolia (84532)
 * Confirm the full canonical supported-chain list with the team before publishing (solver constants may add more)
 * How to request additional chains/tokens

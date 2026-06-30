@@ -53,7 +53,7 @@ Epoch supports a growing set of **source chains** (where the user holds funds) a
 See the full list in [Supported Chains & Tokens](supported-chains-and-tokens.md).
 
 **Mainnet source chains (reference integration):** Polygon, Optimism, Arbitrum One\
-**Testnet source chains:** Ethereum Sepolia, Arbitrum Sepolia\
+**Testnet source chains:** Ethereum Sepolia, Base Sepolia, Optimism Sepolia\
 **Destination (raffles example):** Base, Base Sepolia
 
 Contact the Epoch team to confirm availability for your use case or to request new chains.
