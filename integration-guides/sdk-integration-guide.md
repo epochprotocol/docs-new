@@ -55,8 +55,8 @@ Full chain and token tables: [Supported Chains & Tokens](../supported-chains-and
 ```
 → getHealthCheck()
 → getTaskData({ taskType, intentData })
-→ getIntentQuote({ sponsorAddress, taskTypeString, intentData })
-→ solveIntent({ ...params, quoteResult, onExecutionStatus })
+→ getIntentQuote({ sponsorAddress, taskTypeString, intentData, routingAndLiquidityOptions? })
+→ solveIntent({ ...params, quoteResult, routingAndLiquidityOptions?, onExecutionStatus })
 → getIntentStatus(userAddress, nonce)
 ```
 
@@ -134,6 +134,36 @@ if (nonce) {
 ```
 
 See [epoch-integration-demo](../integration-examples.md#epoch-integration-demo) for a runnable Node.js script.
+
+### Routing & liquidity options (optional)
+
+Use `routingAndLiquidityOptions` when you want to control **how** the swap is filled — single-transaction filler liquidity (one user signature, seamless end-to-end execution including protocol interactions) vs multi-transaction external routing vs best-of-all.
+
+```typescript
+import type { RoutingAndLiquidityOptions } from "@epoch-protocol/epoch-intents-sdk";
+
+const routingAndLiquidityOptions: RoutingAndLiquidityOptions = {
+  preset: "filler-single-transaction",
+};
+
+const quoteResult = await sdk.getIntentQuote({
+  sponsorAddress: account.address,
+  taskTypeString,
+  intentData,
+  routingAndLiquidityOptions,
+});
+
+await sdk.solveIntent({
+  isNative: false,
+  sponsorAddress: account.address,
+  taskTypeString,
+  intentData,
+  quoteResult,
+  routingAndLiquidityOptions, // same as quote
+});
+```
+
+Presets: `any` (default), `filler-single-transaction` (one transaction, seamless end-to-end execution for the user — protocol interactions handled by the filler), `external-multi-transactions`, `custom` (with `solvers: [\`0x…\`]`). See [SDK Reference](./sdk-reference.md#getintentquoteparams).
 
 ***
 

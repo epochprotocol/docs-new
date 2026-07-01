@@ -83,8 +83,8 @@ Full chain/token tables and API details: [reference.md](reference.md)
 ```
 GET /health
   → getTaskData({ taskType, intentData })
-  → getIntentQuote({ sponsorAddress, taskTypeString, intentData })
-  → solveIntent({ ...params, quoteResult, onExecutionStatus })
+  → getIntentQuote({ sponsorAddress, taskTypeString, intentData, routingAndLiquidityOptions? })
+  → solveIntent({ ...params, quoteResult, routingAndLiquidityOptions?, onExecutionStatus })
   → getIntentStatus(userAddress, nonce)
 ```
 
