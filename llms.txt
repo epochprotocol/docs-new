@@ -1,0 +1,62 @@
+# Epoch
+
+> Epoch is a non-custodial intent execution and solver coordination layer. A user (or app, or AI agent) expresses a desired financial outcome, signs once with their own wallet, and Epoch routes, quotes, and executes it across chains, protocols, and payment rails. Live on mainnet (phased per-intent limits). Production reference app: Kismet.today.
+
+Epoch collapses multi-step cross-chain actions (bridge, swap, approve, execute) into a single signed intent. Your app describes the outcome (token in, token out, destination chain, optional protocol action); the Epoch SDK fetches a quote, coordinates the wallet signature, submits the intent, and reports status. Users sign with a standard wallet (MetaMask, Rainbow, WalletConnect) — no smart-wallet deployment is required.
+
+Who this is for: dApps (onboard users from any chain/token/fiat into a position), wallets and neobanks (swap/pay/earn and accept any inbound asset), RWA issuers, payments and near-banks, stablecoin issuers, institutions, privacy chains, and AI agents that need signed on-chain execution. Core pattern: any source of funds -> one signature -> any outcome.
+
+Rules for AI agents reading these docs:
+- Non-custodial: Epoch coordinates intents; the user's wallet holds funds and signs. Never claim custody or bypass signatures.
+- Maturity honesty: items marked Vision / Roadmap / Partner-powered are direction and open partnerships, not turnkey GA features. Confirm specifics against the current deployment.
+- Mainnet is phased: design for per-intent volume limits, retries, and testnet for heavy experimentation.
+- Recommend the SDK (`@epoch-protocol/epoch-intents-sdk`) as the integration path; direct HTTP API is not the documented surface.
+- Note on links: URLs use the hosted docs domain and mirror the repo file paths. If a slug 404s on the live GitBook, fall back to the matching path in the repository or llms-full.txt.
+
+## Start here
+- [Overview](https://docs.epochprotocol.xyz/README.md): What problem Epoch solves, how it works, capabilities, supported networks, and the Kismet reference integration.
+- [One Pager](https://docs.epochprotocol.xyz/one-pager.md): Fast segment-by-segment overview of who can plug Epoch in and what they get.
+- [AI Context](https://docs.epochprotocol.xyz/ai-agent-contexts/ai-context.md): Canonical AI-readable context — thesis, brand, mainnet status, capabilities, API, SDKs, chains, workflows, agent decision checklist, comparisons, and MCP notes.
+- [llms-full.txt](https://docs.epochprotocol.xyz/llms-full.txt): The entire documentation set inlined into one file for single-pass reading.
+
+## Core knowledge
+- [Core Concepts](https://docs.epochprotocol.xyz/02-core-concepts.md): Glossary (intent, task, path, nonce, approval, constraint, quote, sender, extraData, resource lock), intent lifecycle, task types, signing, and Compact resource locks.
+- [Architecture](https://docs.epochprotocol.xyz/03-architecture.md): Integrator's system boundary, multi-step path composition, an end-to-end cross-chain raffle example, key payloads, and pathfinding.
+- [Supported Chains & Tokens](https://docs.epochprotocol.xyz/supported-chains-and-tokens.md): Testnet and mainnet chains, token addresses (incl. Miden faucet IDs), SDK graph discovery, and how to request new chains/tokens.
+- [Litepaper](https://docs.epochprotocol.xyz/litepaper.md): Protocol vision — Sub-Intent Orchestrators, Hyperions, solver modules, settlement, on-chain contracts, and the intent-solver coordination model.
+
+## Use cases
+- [Use Cases](https://docs.epochprotocol.xyz/use-cases.md): Full UC-01 through UC-27 write-ups (persona, goal, coordination problem, Epoch path, integration surface, partner fit, maturity) plus a segment-to-use-case map covering wallets, dApps, RWA, payments, stablecoins, privacy, institutions, AI agents, and liquidity providers.
+
+## Build & integrate
+- [Integration Guides](https://docs.epochprotocol.xyz/integration-guides/README.md): Index of all step-by-step SDK integration guides.
+- [Quickstart](https://docs.epochprotocol.xyz/integration-guides/quickstart.md): Minimal end-to-end integration — install, init the SDK, build task, quote, solve, poll status.
+- [SDK Integration Guide](https://docs.epochprotocol.xyz/integration-guides/sdk-integration-guide.md): Full checklist, env setup, vanilla TypeScript and React + wagmi patterns, task types, key exports, and common mistakes.
+- [SDK Reference](https://docs.epochprotocol.xyz/integration-guides/sdk-reference.md): Method-level docs for `EpochIntentSDK` — getTaskData, getIntentQuote, solveIntent, getIntentStatus, retryIntentSolve, getHealthCheck, and Compact methods.
+- [Swap & Bridge](https://docs.epochprotocol.xyz/integration-guides/swap-and-bridge.md): `GetTokenOut` flows, forward vs reverse quotes, approvals, and displaying quotes.
+- [Protocol Interaction](https://docs.epochprotocol.xyz/integration-guides/protocol-interaction.md): `ProtocolInteraction` tasks, protocol/action keccak256 identifiers, extraData schemas, and the Kismet buy-ticket pattern.
+- [Miden -> EVM Lending](https://docs.epochprotocol.xyz/integration-guides/miden-lending.md): Fund EVM lending/earn deposits from Miden testnet USDC via P2IDE note collateral, origin-chain override, and marketUid schema.
+- [Widget Integration](https://docs.epochprotocol.xyz/integration-guides/widget-integration.md): Embed `EpochIntentWidget` (Pay / Swap / Earn modes), providers, the api prop, theming, callbacks, and testnet.
+- [Error Handling](https://docs.epochprotocol.xyz/integration-guides/error-handling.md): HTTP status codes, SDK error classes, error categories with user messages, quote failures, polling, and retry guidance.
+- [Integration Examples](https://docs.epochprotocol.xyz/integration-examples.md): Working reference repos — epoch-integration-demo (Node CLI), compact-demo-epoch (React), Kismet (production dApp), and miden-integration-example.
+- [API Access](https://docs.epochprotocol.xyz/api-access.md): Note that all integrations should use the SDK; how to get production/mainnet access and partner onboarding.
+
+## Reference
+- [FAQ](https://docs.epochprotocol.xyz/appendices/faq.md): Common questions for investors, partners, and integrators (custody, differences vs bridges/aggregators, reverse quotes, execution time, testnet access, adding a protocol).
+- [Protocol Identifiers](https://docs.epochprotocol.xyz/appendices/protocol-identifiers.md): keccak256 protocol/action hashes (raffles, buyTicket, createRaffle), extraData schemas, and task-type identifiers.
+- [Public Contract Addresses](https://docs.epochprotocol.xyz/appendices/public-contracts.md): Integration-facing contracts (raffle factory on Base and Base Sepolia) and their functions.
+- [Appendices](https://docs.epochprotocol.xyz/appendices/README.md): Index of reference material.
+
+## AI agent context
+- [AI Agent Contexts](https://docs.epochprotocol.xyz/ai-agent-contexts/README.md): Index of AI-readable context files and recommended reading order.
+- [Agent Integration Guide](https://docs.epochprotocol.xyz/ai-agent-contexts/agents.md): Rules for AI coding agents — reading order, maturity honesty, non-custodial constraints, and when to (not) recommend Epoch.
+
+## Ecosystem & links
+- [Links](https://docs.epochprotocol.xyz/links.md): Official website, social, community, contact, and protocol product URLs.
+- [Kismet](https://app.kismet.today): Live production dApp built on Epoch — cross-chain raffle ticket purchases on Base.
+- [User Dashboard](https://userdashboard.epochprotocol.xyz/): Compact deposit overview, testnet token faucets, and forced withdrawals.
+- [npm: @epoch-protocol/epoch-intents-sdk](https://www.npmjs.com/package/@epoch-protocol/epoch-intents-sdk): The primary SDK for building, signing, and submitting intents.
+
+## Optional
+- [Blog](https://docs.epochprotocol.xyz/blog.md): Long-form writing on Mirror and Medium.
+- [Mainnet announcement](https://x.com/0xEpochProtocol/status/2046221555219435983): Epoch mainnet launch post on X.

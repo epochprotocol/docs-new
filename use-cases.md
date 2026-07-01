@@ -42,6 +42,7 @@ Every use case follows the same schema:
 * **Epoch path:** Earn flow → solver picks venue → deposit intent → signed → executed.
 * **Integration surface:** `widget` / `flows-sdk`.
 * **Partner fit:** wallets, consumer DeFi apps.
+* **Example:** Phantom, Metamask, Base wallet, EtherFi
 
 ### UC-02 — Pay an invoice from any token/chain (Live)
 
@@ -51,6 +52,7 @@ Every use case follows the same schema:
 * **Epoch path:** Pay flow with fixed receive token/chain; payer source is flexible; conversion + settlement in one intent.
 * **Integration surface:** `widget` / `flows-sdk`.
 * **Partner fit:** wallets, checkout/commerce.
+* **Example:** OKx wallet, Base wallet, Trustlinq, DashX
 
 ### UC-03 — In-wallet swap (Live)
 
@@ -59,6 +61,7 @@ Every use case follows the same schema:
 * **Epoch path:** Swap flow over competing DEX solvers/routes.
 * **Integration surface:** `widget`.
 * **Partner fit:** wallets.
+* **Example:** Metamask, Base wallet, Raby, Exodus, Safe wallet
 
 ### UC-04 — Locked-source subscription (Live)
 
@@ -67,6 +70,7 @@ Every use case follows the same schema:
 * **Epoch path:** Pay flow with locked source token/chain.
 * **Integration surface:** `flows-sdk`.
 * **Partner fit:** subscriptions, SaaS, consumer apps.
+* **Example:** Ai agents, Netflix, Prime
 
 ### UC-23 — Accept any chain/token despite a single-chain license (Vision)
 
@@ -76,6 +80,7 @@ Every use case follows the same schema:
 * **Epoch path:** accept inbound on any chain/token; convert + bridge on the fly so value lands on the provider's licensed chain in their required token.
 * **Integration surface:** `flows-sdk`.
 * **Partner fit:** neobanks, wallet providers, card programs.
+* **Example:** Privy, OpenFort, Crossmint, Fun
 
 ***
 
@@ -88,6 +93,7 @@ Every use case follows the same schema:
 * **Epoch path:** single intent moves value A → B and enters the app. See [**Kismet.today**](https://kismet.today/) on mainnet.
 * **Integration surface:** `widget` / `intents-sdk`.
 * **Partner fit:** any mainnet dApp.
+* **Example:** Hyperliquid, Polymarket, Morpho
 
 ### UC-17 — Any token (incl. meme coin) → direct entry into a pool/perp (Vision)
 
@@ -97,6 +103,7 @@ Every use case follows the same schema:
 * **Epoch path:** one intent: normalize the source asset, route to the target chain, and enter the position.
 * **Integration surface:** `intents-sdk` (dApp embeds), `widget` (drop-in).
 * **Partner fit:** high-volume dApps — Polymarket, Hyperliquid class.
+* **Example:** Hyperliquid, Polymarket
 
 ### UC-16 — Fiat → position in one click (Partner-powered / Vision)
 
@@ -118,6 +125,7 @@ Every use case follows the same schema:
 * **Epoch path:** intent abstracts mint/route/settle into the RWA.
 * **Integration surface:** `intents-sdk`.
 * **Partner fit:** RWA issuers.
+* **Example:** Midas, Superstate, securitize, Ondo
 
 ### UC-18 — Outcome stacking on RWAs (Vision)
 
@@ -154,6 +162,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Why it matters:** turns "buy and hold" into volume + utility for the RWA token → more usage, more liquidity, more issuer revenue.
 * **Integration surface:** `intents-sdk`, multiprotocol + earn solvers.
 * **Partner fit:** RWA issuers, "Yield for RWA" projects.
+* **Example:** Multipli, R2, Refi2, RWA issuer those who need secondary yield and more Token utility
 
 ### UC-25 — Deepen fragmented RWA liquidity (Vision)
 
@@ -162,6 +171,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** stand up LP-backed liquidity pools (with Epoch liquidity partners) pairing the RWA with other tokens, so users can swap/bridge/custody through Epoch; pair with UC-18 to drive utility.
 * **Integration surface:** `solver` + liquidity pools.
 * **Partner fit:** RWA issuers + liquidity providers.
+* **Example:** Midas, Securitize, Ondo
 
 ***
 
@@ -174,6 +184,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** Pay flow normalizes source and delivers the agreed token/chain.
 * **Integration surface:** `flows-sdk`.
 * **Partner fit:** payments apps.
+* **Example:** Stripe, Bitpay, BVNK
 
 ### UC-20 — Token-preference receive (Vision)
 
@@ -183,6 +194,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** business pins receive token/chain; payer sends any asset (via Stripe/Tempo-style rails or direct); Epoch converts on the fly so the business account always lands in its chosen token.
 * **Integration surface:** `flows-sdk`.
 * **Partner fit:** merchants, payment processors, treasuries.
+* **Example:** Stripe, Paypal, BVNK
 
 ### UC-21 — Auto-savings sweep of idle balances (Vision)
 
@@ -192,6 +204,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** received funds auto-route into a chosen vault (Morpho, Aave, …); pulled back out on spend — single SDK integration, single signature pattern.
 * **Integration surface:** `flows-sdk` (Earn + Pay composed).
 * **Partner fit:** payments apps, near-banks, business accounts.
+* **Example:** Revoult, Bleap, Tria, Superform, infini, Moon
 
 ### UC-22 — Near-bank: one SDK for savings + DeFi + payments (Roadmap / Vision)
 
@@ -201,6 +214,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** one integration provides (a) savings sweep (UC-21), (b) DeFi access, (c) **1:1-backed stablecoin mobility** (UC-19) — collapsed into a single transaction/signature for the user.
 * **Integration surface:** `flows-sdk` + `solver`.
 * **Partner fit:** near-banks, neo-banks, card programs, stablecoin wallets.
+* **Example:** Bleap, Superform, Gnosis pay, Zoth
 
 ***
 
@@ -214,6 +228,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** specialized solvers present **1:1-backed** value across chains and stablecoins; on-the-fly conversion lands the receiver's required token at their fixed address. Slippage is absorbed at the service layer; the bank/issuer covers it and Epoch charges a small subscription/fee.
 * **Integration surface:** + `solver`.
 * **Partner fit:** stablecoin issuers (JPMUSD/BofA-style), payment infra, near-banks, e.g. **Koala Pay**.
+* **Example:** JPM, Agant, Brale, Circle, Anchorage Digital
 
 ***
 
