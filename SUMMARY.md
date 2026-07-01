@@ -22,7 +22,7 @@
   * [Protocol Identifiers](appendices/protocol-identifiers.md)
   * [Public Contract Addresses](appendices/public-contracts.md)
 * [AI Agent Contexts](ai-agent-contexts/ai-context.md)
-  * [Agent Integration Guide](ai-agent-contexts/agents.md)
+  * [Agent Context Guide](ai-agent-contexts/agents.md)
 * [Litepaper](litepaper.md)
 * [Blog](blog.md)
 * [Links](links.md)
