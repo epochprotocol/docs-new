@@ -49,7 +49,7 @@ Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queri
 | `src/context/LocalSignerContext.tsx` | Private-key wallet client (in-memory) |
 | `src/components/GaslessEnableButton.tsx` | Gasless opt-in / smart-account setup UI |
 | `src/components/WalletConnect.tsx` | Browser wallet + local signer tabs |
-| `src/pages/BalancePage.tsx` | Quote → solve (`gasless: true`) → status |
+| `src/pages/BalancePage.tsx` | Quote → solve (`gasless: true`, routing preset picker) → status |
 | `src/components/UserBalancesList.tsx` | `getDepositedBalances` |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow |
 

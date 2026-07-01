@@ -60,7 +60,26 @@ getIntentQuote(params: {
   taskTypeString: string;
   intentData: unknown;
   isNative?: boolean;
+  routingAndLiquidityOptions?: RoutingAndLiquidityOptions;
 }): Promise<IntentQuoteResult>
+```
+
+**`RoutingAndLiquidityOptions`** (optional) — controls which solver liquidity paths SIO may quote. Mapped server-side to `constraint.preferredSolvers`. Use the **same** value in `getIntentQuote` and `solveIntent`.
+
+| Preset | UX | Behavior |
+|--------|-----|----------|
+| `{ preset: "any" }` | Best quote (default) | All registered solvers |
+| `{ preset: "filler-single-transaction" }` | One user transaction; seamless end-to-end execution | Epoch filler treasury only — protocol interactions bundled behind a single signature |
+| `{ preset: "external-multi-transactions" }` | Multi-transaction flow | External aggregators only |
+| `{ preset: "custom"; solvers: [\`0x…\`] }` | Pin specific solver(s) | Explicit solver address(es) |
+
+```typescript
+await sdk.getIntentQuote({
+  sponsorAddress,
+  taskTypeString,
+  intentData,
+  routingAndLiquidityOptions: { preset: "filler-single-transaction" },
+});
 ```
 
 **`IntentQuoteResult` fields:**
@@ -89,6 +108,7 @@ solveIntent(params: {
   taskTypeString: string;
   intentData: unknown;
   quoteResult?: IntentQuoteResult;  // optional; fetched internally if omitted
+  routingAndLiquidityOptions?: RoutingAndLiquidityOptions;
   onExecutionStatus?: (status: TransactionExecutionStatus) => void;
   collateralType?: CollateralType;  // EVM | Miden — partner flows
   gasless?: boolean;  // opt-in EIP-7702 relay for Compact deposit (testnet)
