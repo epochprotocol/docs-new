@@ -65,7 +65,7 @@ docs-new/
 | Project | Description |
 |---------|-------------|
 | [Kismet](https://app.kismet.today) | Production raffles — cross-chain ticket purchases |
-| [compact-demo-epoch](integration-examples.md#compact-demo-epoch) | React swap/bridge UI |
+| [compact-demo-epoch](integration-examples.md#compact-demo-epoch) | React swap/bridge UI + gasless testnet demo |
 | [epoch-integration-demo](integration-examples.md#epoch-integration-demo) | Node.js CLI script |
 | [miden-integration-example](integration-examples.md#miden-integration-example) | EVM ⇄ Miden bridge |
 

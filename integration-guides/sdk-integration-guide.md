@@ -15,6 +15,7 @@ Add Epoch cross-chain intent flows to any JavaScript/TypeScript project using `@
 - [ ] Fetch allocator address via sdk.getHealthCheck() (do not hard-code)
 - [ ] Implement: getTaskData → getIntentQuote → solveIntent → getIntentStatus
 - [ ] Use testnetGraph/mainnetGraph for token/chain discovery
+- [ ] (Optional, testnet) Gasless Compact deposits: setupSmartAccount → solveIntent({ gasless: true }) — see [Gasless Deposits](gasless-deposits.md)
 ```
 
 ***
@@ -247,6 +248,33 @@ const health = await sdk.getHealthCheck();
 const { allocatorAddress, chainConfig } = health;
 ```
 
+### 7. Gasless Compact deposits (testnet, optional)
+
+For local signers or custom UIs that opt into relay-sponsored deposits:
+
+```typescript
+// One-time per EOA on a gasless-enabled chain
+await sdk.setupSmartAccount({ chainId: 84532 });
+
+const result = await sdk.solveIntent({
+  // ...standard solve params
+  quoteResult,
+  gasless: true,
+});
+
+if (result.gaslessUsed) {
+  console.log("Deposit relayed — user did not pay gas for approve + deposit");
+}
+```
+
+Probe before showing UI:
+
+```typescript
+const status = await sdk.getWalletGaslessStatus(chainId);
+```
+
+Full guide: [Gasless Deposits](gasless-deposits.md).
+
 ***
 
 ## Task Types
@@ -286,7 +314,11 @@ import {
 | `src/config/web3.ts`                      | Token/chain discovery from graphs      |
 | `src/config/api.ts`                       | `VITE_API_BASE_URL` helper             |
 | `src/hooks/useAllocatorAPI.ts`            | Health check, allocator address        |
-| `src/pages/BalancePage.tsx`               | Full swap flow: quote → solve → status |
+| `src/hooks/useEffectiveWallet.ts`           | Browser wallet + local signer          |
+| `src/hooks/useGaslessWallet.ts`             | Gasless probe + smart-account setup    |
+| `src/components/GaslessEnableButton.tsx`    | Gasless toggle UI                      |
+| `src/components/WalletConnect.tsx`          | RainbowKit + local signer form         |
+| `src/pages/BalancePage.tsx`               | Quote → solve (`gasless`) → status     |
 | `src/components/UserBalancesList.tsx`     | `getDepositedBalances`                 |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow                 |
 
@@ -305,5 +337,6 @@ import {
 ## Next steps
 
 * [SDK Reference](sdk-reference.md) — full method documentation
+* [Gasless Deposits](gasless-deposits.md) — EIP-7702 testnet relay
 * [Error Handling](error-handling.md)
 * [Integration Examples](../integration-examples.md)

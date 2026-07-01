@@ -34,7 +34,13 @@ No. Users connect their own wallets and sign transactions. Epoch orchestrates ex
 
 ### What wallet do users need?
 
-A standard EOA wallet: MetaMask, Rainbow, Coinbase Wallet, or any WalletConnect-compatible wallet. No smart-wallet deployment is required.
+A standard EOA wallet: MetaMask, Rainbow, Coinbase Wallet, or any WalletConnect-compatible wallet. No smart-wallet deployment is required for the default integration path.
+
+For **testnet gasless Compact deposits**, integrators can use a **local private-key signer** (viem) or MetaMask with EIP-5792 batching. See [Gasless Deposits](../integration-guides/gasless-deposits.md).
+
+### What is gasless in Epoch?
+
+On testnet, optional **gasless Compact deposits** let users sign approve + deposit intent data while Epoch's relayer pays gas for those on-chain steps (EIP-7702 delegation + relay). It does not remove gas from the entire cross-chain intent — only the Compact deposit phase. Mainnet gasless is not documented until announced.
 
 ### Do I need the SDK?
 

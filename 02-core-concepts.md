@@ -16,6 +16,7 @@
 | **Protocol interaction** | A task type where Epoch executes a protocol-specific action (e.g. `buyTicket`) on the destination chain.            |
 | **`extraData`**          | JSON fields describing the protocol and action for protocol-interaction tasks.                                      |
 | **Resource lock**        | Collateral locked via The Compact when server-coordinated execution is required.                                    |
+| **Gasless deposit**      | Testnet option: EIP-7702 delegation + relayer-sponsored Compact approve/deposit; user signs, relayer pays gas.      |
 
 ***
 
@@ -116,6 +117,15 @@ Protocol and action are identified by **keccak256 hashes of their string names**
 Some intents require a **resource lock** — collateral locked on-chain via The Compact before Epoch executes server-side. The quote response includes `resourceLockRequired: true` when this applies.
 
 If your integration uses Compact flows, the SDK may prompt the user for additional deposit and attestation steps. Contact Epoch for partner access to Compact-backed flows.
+
+### Gasless Compact deposits (testnet)
+
+On supported testnets, integrators can enable **relay-sponsored deposits**: the user's EOA delegates to an EIP-7702 implementation via a one-time setup, then signs Compact sponsor data while the Epoch relayer submits approve + deposit transactions.
+
+* **Local / headless signers** — full gasless relay path (`setupSmartAccount` → `solveIntent({ gasless: true })`).
+* **Browser wallets (MetaMask)** — wallet-paid deposits with EIP-5792 batching when available; SIO relay is not used for injected accounts.
+
+See [Gasless Deposits](integration-guides/gasless-deposits.md).
 
 ***
 

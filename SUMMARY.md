@@ -10,6 +10,7 @@
 * [Integration Guides](integration-guides/README.md)
   * [Quickstart](integration-guides/quickstart.md)
   * [SDK Integration Guide](integration-guides/sdk-integration-guide.md)
+  * [Gasless Deposits](integration-guides/gasless-deposits.md)
   * [skills.md](integration-guides/skills-md.md)
   * [SDK Reference](integration-guides/sdk-reference.md)
   * [Swap & Bridge Integration](integration-guides/swap-and-bridge.md)
