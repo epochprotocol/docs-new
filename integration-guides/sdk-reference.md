@@ -14,6 +14,7 @@ Peer dependency: **viem** ^2.x
 new EpochIntentSDK({
   apiBaseUrl: string;      // Epoch allocator URL (no trailing slash)
   walletClient: WalletClient;  // viem wallet client from wagmi or viem
+  gaslessDefault?: boolean;  // when true, solveIntent prefers gasless relay on supported chains
 })
 ```
 
@@ -90,8 +91,11 @@ solveIntent(params: {
   quoteResult?: IntentQuoteResult;  // optional; fetched internally if omitted
   onExecutionStatus?: (status: TransactionExecutionStatus) => void;
   collateralType?: CollateralType;  // EVM | Miden — partner flows
-}): Promise<unknown>
+  gasless?: boolean;  // opt-in EIP-7702 relay for Compact deposit (testnet)
+}): Promise<{ allocationResponse?: { nonce: string }; gaslessUsed?: boolean; ... }>
 ```
+
+When `gasless: true` on a supported testnet chain with a delegated EOA, the SDK relays approve + Compact deposit via the allocator relayer. The user still signs sponsor data; the relayer pays gas. See [Gasless Deposits](gasless-deposits.md).
 
 **Execution status phases** (via `onExecutionStatus`):
 
@@ -155,6 +159,36 @@ Contact Epoch before exposing Compact flows to end users.
 
 ---
 
+## Gasless methods (testnet)
+
+Available when using a gasless-enabled allocator (`GET /gasless-status` → `enabled: true`).
+
+| Method | Purpose |
+|--------|---------|
+| `getWalletGaslessStatus(chainId)` | Probe delegation state, relay eligibility, setup needed |
+| `setupSmartAccount({ chainId })` | Sign 7702 authorization + relay enable (local signers) |
+| `ensureGaslessReady({ chainId })` | Upgrade + setup + verify in one call |
+| `setupGaslessWallet({ chainId })` | Alias for smart-account setup |
+| `gaslessDepositToCompact(...)` | Standalone relayed deposit (without full solve) |
+| `revokeGaslessWallet({ chainId })` | Revoke 7702 delegation |
+
+**Exported helpers** (also available from package root):
+
+```typescript
+import {
+  GaslessUnavailableError,
+  getWalletGaslessStatus,
+  GASLESS_SUPPORTED_CHAIN_IDS,
+  shouldUseGaslessRelay,
+  setupSmartAccount,
+  ensureGaslessReady,
+} from "@epoch-protocol/epoch-intents-sdk";
+```
+
+Full guide: [Gasless Deposits](gasless-deposits.md).
+
+---
+
 ## Task types
 
 Import from `@epoch-protocol/epoch-commons-sdk`:
@@ -185,6 +219,7 @@ You do **not** need to implement these steps manually when using the SDK:
 ## Next steps
 
 - [SDK Integration Guide](./sdk-integration-guide.md)
+- [Gasless Deposits](./gasless-deposits.md)
 - [Swap & Bridge](./swap-and-bridge.md)
 - [Protocol Interaction](./protocol-interaction.md)
 - [Error Handling](./error-handling.md)

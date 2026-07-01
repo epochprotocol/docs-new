@@ -35,11 +35,12 @@ Branch on `code` when available; fall back to `error` message for display.
 
 The SDK throws typed errors:
 
-| Error class        | Typical cause                                             |
-| ------------------ | --------------------------------------------------------- |
-| `CompactSDKError`  | Invalid parameters, unsupported chain, simulation timeout |
-| `APIError`         | Server error from Epoch backend                           |
-| `TransactionError` | On-chain transaction failure                              |
+| Error class               | Typical cause                                             |
+| ------------------------- | --------------------------------------------------------- |
+| `CompactSDKError`         | Invalid parameters, unsupported chain, simulation timeout |
+| `APIError`                | Server error from Epoch backend                           |
+| `TransactionError`        | On-chain transaction failure                              |
+| `GaslessUnavailableError` | Gasless relay disabled, wallet not delegated, or relay rejected (`code: GASLESS_UNAVAILABLE`) |
 
 Wrap SDK calls in try/catch and surface `error.message` to users (avoid raw stack traces).
 
@@ -66,6 +67,9 @@ try {
 | **Nonce / signature invalid** | "Session expired. Please try again."                       | Yes — new quote + solve        |
 | **Intent already processed**  | "This request was already submitted."                      | No — same nonce                |
 | **Execution failed**          | "Transaction failed. Please try again or contact support." | Maybe — see `retryIntentSolve` |
+| **Gasless unavailable**       | "Gasless not available — switch chain, set up smart account, or use standard deposit." | Yes — after `setupSmartAccount` or disable `gasless` |
+
+When `solveIntent({ gasless: true })` throws `GaslessUnavailableError`, there is no wallet-paid fallback. Use `gasless: false` or omit `gasless` to allow standard deposits. See [Gasless Deposits](gasless-deposits.md).
 
 ***
 

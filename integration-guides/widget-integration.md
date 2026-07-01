@@ -20,6 +20,7 @@ How to embed `EpochIntentWidget` in your React app. You render one component and
   - [Earn](#earn)
 - [Theming](#theming)
 - [Wiring callbacks](#wiring-callbacks)
+- [Gasless deposits (testnet)](#gasless-deposits-testnet)
 - [Testnet](#testnet)
 - [Packaging notes](#packaging-notes)
 - [Bundler notes](#bundler-notes)
@@ -355,6 +356,26 @@ Rules of thumb (full detail in [BEHAVIOR.md](./BEHAVIOR.md#events--callbacks)):
 - Put user-facing success work in **`onSuccess`** — the modal auto-closes shortly after, so don't depend on it staying open.
 - Treat **`onClose` without a preceding `onSuccess`** as "outcome unknown," not "failed" — an issued intent can still settle server-side. Persist the nonce from `onIntentSent` to reconcile.
 - There is **no settlement timeout**; add your own if your UX needs a ceiling.
+
+---
+
+## Gasless deposits (testnet)
+
+On testnet Pay/Swap flows the widget can offer **gasless Compact deposits** via EIP-7702 relay (`feat/gasless-7702` branch).
+
+| Prop | Default | Description |
+| ---- | ------- | ----------- |
+| `allowGasless` | `true` | Show gasless UI when chain + wallet support relay |
+| `gasless` | `false` | Initial or controlled gasless state |
+
+Behavior:
+
+* **Local signers** (`walletClient.account.type === "local"`) — shows `GaslessEnableButton`; user runs `setupSmartAccount` once, then `solveIntent` with `gasless: true`.
+* **Injected wallets** (MetaMask, etc.) — gasless relay UI is hidden; deposits use wallet-paid EIP-5792 batching when supported.
+
+Supported chains: Base Sepolia (84532), Ethereum Sepolia (11155111), Optimism Sepolia (11155420). Requires allocator `GASLESS_ENABLED=true` and a funded epoch-sio relayer.
+
+Full guide: [Gasless Deposits](./gasless-deposits.md). Reference UI: [compact-demo-epoch](../integration-examples.md#compact-demo-epoch).
 
 ---
 

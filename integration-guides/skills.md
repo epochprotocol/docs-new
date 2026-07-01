@@ -1,6 +1,6 @@
 ---
 name: integrate-epoch
-description: Integrates Epoch Protocol cross-chain intents into JavaScript/TypeScript projects using @epoch-protocol/epoch-intents-sdk (smallocator/sdk). Use when adding Epoch swaps, bridges, deposits, balance checks, or withdrawals; when the user mentions Epoch, smallocator, compact-demo-epoch, or testnet-dev.epochprotocol.xyz.
+description: Integrates Epoch Protocol cross-chain intents into JavaScript/TypeScript projects using @epoch-protocol/epoch-intents-sdk (smallocator/sdk). Use when adding Epoch swaps, bridges, deposits, balance checks, withdrawals, or testnet gasless EIP-7702 Compact deposits; when the user mentions Epoch, smallocator, compact-demo-epoch, or testnet-dev.epochprotocol.xyz.
 ---
 
 # Integrate Epoch
@@ -240,6 +240,16 @@ const response = await fetch(`${apiBaseUrl}/health`);
 const { allocatorAddress, chainConfig } = await response.json();
 ```
 
+### 7. Gasless Compact deposits (testnet)
+
+```typescript
+const status = await sdk.getWalletGaslessStatus(chainId);
+await sdk.setupSmartAccount({ chainId });
+await sdk.solveIntent({ ...params, quoteResult, gasless: true });
+```
+
+See [Gasless Deposits](gasless-deposits.md). Local signer required for full relay path.
+
 ## Task Types
 
 | Task            | Enum                           | Use case                        |
@@ -273,7 +283,11 @@ import {
 | `src/config/web3.ts`                      | Token/chain discovery from graphs      |
 | `src/config/api.ts`                       | `VITE_API_BASE_URL` helper             |
 | `src/hooks/useAllocatorAPI.ts`            | Health check, allocator address        |
-| `src/pages/BalancePage.tsx`               | Full swap flow: quote → solve → status |
+| `src/hooks/useEffectiveWallet.ts`           | Browser + local signer                 |
+| `src/hooks/useGaslessWallet.ts`             | Gasless probe + setup                  |
+| `src/components/GaslessEnableButton.tsx`    | Gasless toggle UI                      |
+| `src/components/WalletConnect.tsx`          | RainbowKit + local signer tabs         |
+| `src/pages/BalancePage.tsx`               | Quote → solve (`gasless`) → status     |
 | `src/components/UserBalancesList.tsx`     | `getDepositedBalances`                 |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow                 |
 
@@ -288,5 +302,6 @@ import {
 ## Additional Resources
 
 - Full API endpoints, error handling, EIP-712 details: [reference.md](reference.md)
+- Gasless EIP-7702 deposits: [gasless-deposits.md](gasless-deposits.md)
 - SDK source guide: `smallocator/sdk/skills.md`
 - Working demo: `compact-demo-epoch/`
