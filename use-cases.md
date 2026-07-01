@@ -52,7 +52,7 @@ Every use case follows the same schema:
 * **Epoch path:** Pay flow with fixed receive token/chain; payer source is flexible; conversion + settlement in one intent.
 * **Integration surface:** `widget` / `flows-sdk`.
 * **Partner fit:** wallets, checkout/commerce.
-* **Example:** OKx wallet, Base wallet, Trustlinq, DashX
+* **Example:** OKx wallet, Deel, TOKU, Rippling
 
 ### UC-03 — In-wallet swap (Live)
 
@@ -63,14 +63,6 @@ Every use case follows the same schema:
 * **Partner fit:** wallets.
 * **Example:** Metamask, Base wallet, Raby, Exodus, Safe wallet
 
-### UC-04 — Locked-source subscription (Live)
-
-* **Persona:** user paying recurring fees.
-* **Goal:** always pay in USDC-on-Base regardless of held assets.
-* **Epoch path:** Pay flow with locked source token/chain.
-* **Integration surface:** `flows-sdk`.
-* **Partner fit:** subscriptions, SaaS, consumer apps.
-* **Example:** Ai agents, Netflix, Prime
 
 ### UC-23 — Accept any chain/token despite a single-chain license (Vision)
 
@@ -241,6 +233,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** onboard/offboard to the privacy chain; route DeFi actions on EVM chains so activity is unlinkable to the private account.
 * **Integration surface:** / native wallet integration.
 * **Partner fit:** privacy chains — **Miden** (active), **Canton**.
+* **Example:** Miden, Aztec, Zksync
 
 ### UC-27 — On-demand privacy with pre-transaction compliance (Partner-powered / Vision)
 
@@ -250,6 +243,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** through the privacy partner, Epoch provides private transactions / private custody **on demand** (toggled per institution or per transaction), with optional **compliance checks run before any transaction executes**.
 * **Integration surface:** + privacy-chain integration.
 * **Partner fit:** institutions, banks, asset managers; via privacy partners (Miden / Canton / Newton).
+* **Example:** JPM, BOA, Sharplink, Galaxy digital, Bitwise, DCG
 
 ### UC-24 — Institutional private cross-chain DeFi + liquidity rebalancing (Vision)
 
@@ -259,6 +253,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** funds stay private on a partner privacy chain (e.g. Miden); for EVM activity, Epoch executes via fresh/segregated wallets so transactions never link back to the private account; privacy is available **on demand** with optional **pre-transaction compliance checks** (see UC-27); coordinates DeFi access and liquidity-pool rebalancing at best rate; pair with onboarding widgets for web2/web3 entry (fiat, card, CEX, DEX).
 * **Integration surface:** + privacy-chain integration + Safe module.
 * **Partner fit:** institutions, banks, asset managers, OTC desks; via privacy partners.
+* **Example:** JPM, BOA, Sharplink, Galaxy digital, Bitwise, DCG, GSR
 
 ### UC-11 — Safe multisig intent batch (Live)
 
@@ -267,6 +262,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** Safe + Epoch Module (ERC-7579); batch intent; intent hash + solver path + tx hash for audit.
 * **Integration surface:** `intents-sdk` + Safe module.
 * **Partner fit:** DAOs, enterprise treasuries.
+* **Example:** DAOs, SAFE wallet 
 
 ***
 
@@ -279,6 +275,7 @@ Optionally borrow (e.g. USDT) and open a position on Polymarket/Hyperliquid.
 * **Epoch path:** agent builds intents; owner signs; Epoch executes.
 * **Integration surface:** `intents-sdk` (+ MCP, roadmap).
 * **Partner fit:** agent / automation teams.
+
 
 ### UC-06 — Organic swap/bridge under an agent (Active — observed)
 
