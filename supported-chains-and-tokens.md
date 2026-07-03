@@ -28,7 +28,7 @@ Additional testnet source chains:
 
 Tokens on **Miden** (chain ID `999999999`) are **fungible faucet accounts** and use **6 decimals** (not 18). The faucet account ID below is the token identifier used in intents. Mint them to your Miden account via the [User Dashboard](https://userdashboard.epochprotocol.xyz/) faucets tab. Account IDs are accepted in hex (`0x…`) or bech32 (`mtst1…`) form.
 
-<table><thead><tr><th width="148.71484375">Symbol</th><th>Faucet ID (hex)</th></tr></thead><tbody><tr><td>USDC</td><td><code>0x8ddb61e056105cf119634d919be743</code></td></tr><tr><td>DAI</td><td><code>0xd162796b525d6c517a0d2a332413d4</code></td></tr><tr><td>USDT</td><td><code>0xd2f049a23e9068715a2def9842673f</code></td></tr><tr><td>WETH</td><td><code>0xd4510f4a85b542b144b84b04670ae6</code></td></tr><tr><td>WBTC</td><td><code>0xb7856af9c04fd3b124308caf69c9f4</code></td></tr><tr><td>MIDEN</td><td><code>0x2458e5446128e6b150b75b8ebd9ce1</code></td></tr></tbody></table>
+<table><thead><tr><th width="148.71484375">Symbol</th><th>Faucet ID (hex)</th></tr></thead><tbody><tr><td>USDC</td><td><code>0xfc90f0f4da30e51168453b60eafed7</code></td></tr><tr><td>DAI</td><td><code>0x176275876f2fd41103257e341832b9</code></td></tr><tr><td>USDT</td><td><code>0x7725b0e9bb9406912d2ebeaeb05f4d</code></td></tr><tr><td>WETH</td><td><code>0xa54717f6bd3210d128aeeaa8a2b7f3</code></td></tr><tr><td>WBTC</td><td><code>0x151823cde4b7bd91352617729d7614</code></td></tr><tr><td>MIDEN</td><td><code>0x2458e5446128e6b150b75b8ebd9ce1</code></td></tr></tbody></table>
 
 ***
 

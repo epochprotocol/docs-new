@@ -76,7 +76,7 @@ npm install @epoch-protocol/epoch-intents-sdk @epoch-protocol/epoch-commons-sdk 
 | Constant                 | Value                                        | Meaning                                                  |
 | ------------------------ | -------------------------------------------- | -------------------------------------------------------- |
 | `MIDEN_VIRTUAL_CHAIN_ID` | `999999999`                                  | Origin chain id for **all** Miden→EVM allocator requests |
-| Miden USDC faucet id     | `0x8ddb61e056105cf119634d919be743`           | Default testnet faucet (6 decimals)                      |
+| Miden USDC faucet id     | `0xfc90f0f4da30e51168453b60eafed7`           | Default testnet faucet (6 decimals)                      |
 | Miden USDC decimals      | **6**                                        | Always use 6 for `tokenInAmount` and P2ID note amount    |
 | EVM `tokenIn` sentinel   | `0x0000000000000000000000000000000000000000` | Signals Miden source (not native ETH)                    |
 | `midenNoteType`          | `P2IDE`                                      | Reclaimable note; include `midenReclaimHeight`           |
@@ -156,7 +156,7 @@ extraData: {
   action: "deposit",
   payAsset: "0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
   midenSourceAccount: "0x<user_miden_account_hex>",
-  midenFaucetId: "0x8ddb61e056105cf119634d919be743",
+  midenFaucetId: "0xfc90f0f4da30e51168453b60eafed7",
   midenNoteType: "P2IDE",
   midenNoteId: "",                    // empty at quote time; filled after note creation
   midenReclaimHeight: "1000",         // blocks until user can reclaim unused note
@@ -205,7 +205,7 @@ import {
 import { keccak256, parseUnits, toBytes } from "viem";
 
 const MIDEN_VIRTUAL_CHAIN_ID = 999_999_999;
-const MIDEN_USDC_FAUCET = "0x8ddb61e056105cf119634d919be743";
+const MIDEN_USDC_FAUCET = "0xfc90f0f4da30e51168453b60eafed7";
 const MIDEN_USDC_DECIMALS = 6;
 const EVM_ZERO = "0x0000000000000000000000000000000000000000";
 
