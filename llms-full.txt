@@ -897,6 +897,7 @@ Tokens on **Miden** (chain ID `999999999`) are **fungible faucet accounts** and 
 | USDT   | `0xd2f049a23e9068715a2def9842673f` |
 | WETH   | `0xd4510f4a85b542b144b84b04670ae6` |
 | WBTC   | `0xb7856af9c04fd3b124308caf69c9f4` |
+| MIDEN  | `0x2458e5446128e6b150b75b8ebd9ce1` |
 
 ## Mainnet environment
 
