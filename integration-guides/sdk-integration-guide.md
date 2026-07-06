@@ -15,7 +15,7 @@ Add Epoch cross-chain intent flows to any JavaScript/TypeScript project using `@
 - [ ] Fetch allocator address via sdk.getHealthCheck() (do not hard-code)
 - [ ] Implement: getTaskData → getIntentQuote → solveIntent → getIntentStatus
 - [ ] Use testnetGraph/mainnetGraph for token/chain discovery
-- [ ] (Optional, testnet) Gasless Compact deposits: setupSmartAccount → solveIntent({ gasless: true }) — see [Gasless Deposits](gasless-deposits.md)
+- [ ] (Optional, testnet) Gasless Compact deposits: `convertToSmartAccount` → `solveIntent({ gasless: true, allowGaslessSmartAccount: true })` — see [Gasless Deposits](gasless-deposits.md)
 ```
 
 ***
@@ -248,30 +248,35 @@ const health = await sdk.getHealthCheck();
 const { allocatorAddress, chainConfig } = health;
 ```
 
-### 7. Gasless Compact deposits (testnet, optional)
+### 7. Gasless mode (testnet, optional)
 
-For local signers or custom UIs that opt into relay-sponsored deposits:
+When gasless is enabled, users sign only — the SDK and wallet handle on-chain gas via smart-wallet batching or relay:
 
 ```typescript
-// One-time per EOA on a gasless-enabled chain
-await sdk.setupSmartAccount({ chainId: 84532 });
+// One-time explicit smart-account conversion (local private-key wallet)
+await sdk.convertToSmartAccount({ chainId: 84532 });
 
 const result = await sdk.solveIntent({
   // ...standard solve params
   quoteResult,
   gasless: true,
+  allowGaslessSmartAccount: true, // local wallet: strict relay, no auto-convert
 });
 
 if (result.gaslessUsed) {
-  console.log("Deposit relayed — user did not pay gas for approve + deposit");
+  console.log("Gasless path used — user did not pay on-chain gas");
 }
 ```
+
+**Injected wallets:** SDK does not prompt smart-wallet upgrade. Gasless relay is for local signers; browser wallets use wallet-paid execution with optional batching when already a smart wallet.
 
 Probe before showing UI:
 
 ```typescript
 const status = await sdk.getWalletGaslessStatus(chainId);
 ```
+
+**Local integration test:** `cd smallocator/sdk && pnpm example:local-wallet` — see [Gasless Deposits](gasless-deposits.md#local-integration-test-end-to-end).
 
 Full guide: [Gasless Deposits](gasless-deposits.md).
 

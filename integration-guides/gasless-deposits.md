@@ -1,127 +1,75 @@
-# Gasless EIP-7702 Compact Deposits
+# Gasless Deposits (Testnet)
 
-Optional **gasless Compact deposits** on testnet: the user signs EIP-7702 authorization and Compact sponsor data; Epoch's relayer broadcasts approve + deposit transactions so the user does not pay gas for those steps.
+On testnet, **gasless mode** lets users sign intent data without paying on-chain gas for the Compact deposit step. The Epoch allocator relays those transactions when gasless is enabled for your environment.
 
-This applies to the **Compact deposit phase** inside `solveIntent` (approve ERC-20, deposit to The Compact, register). Cross-chain intent execution after deposit still follows the normal solver path.
+**User-facing rule:** when gasless is enabled, treat the **entire flow** as gasless. Do not tell end users that only part of the intent is sponsored.
 
-***
-
-## When to use gasless
-
-| Scenario | Recommendation |
-| -------- | -------------- |
-| Testnet demos, scripts, agent wallets with a local private key | Enable gasless relay (`gasless: true`) |
-| Production MetaMask / browser wallet users | Use standard wallet-paid deposits; widget batches via EIP-5792 when supported |
-| Headless CI / integration tests | Local signer + `setupSmartAccount` + `solveIntent({ gasless: true })` |
-
-Gasless relay is **testnet-only** today. Mainnet support is not documented here until explicitly announced.
+Gasless is **testnet-only** today. Mainnet support is not documented here until explicitly announced.
 
 ***
 
-## Supported testnet chains
+## Who can use gasless
 
-Gasless Compact deposits are enabled on these chain IDs (must match allocator `GASLESS_SUPPORTED_CHAIN_IDS`):
+| Integration | How |
+| ----------- | --- |
+| **Local private-key wallet** (scripts, agents, CI) | One-time `convertToSmartAccount`, then `solveIntent({ gasless: true, allowGaslessSmartAccount: true })` |
+| **Browser wallet** (MetaMask, Rainbow, …) | Wallet-native batching when the user already has a smart wallet; SDK does not prompt upgrade |
+| **Widget** | Not supported — use the SDK or [compact-demo-epoch](../integration-examples.md#compact-demo-epoch) |
+
+***
+
+## Supported chains
+
+Verify live support before showing gasless UI:
+
+```http
+GET {apiBaseUrl}/gasless-status
+```
+
+Example response fields: `enabled`, `supportedChainIds`.
 
 | Network | Chain ID |
 | ------- | -------- |
 | Base Sepolia | 84532 |
 | Ethereum Sepolia | 11155111 |
 | Optimism Sepolia | 11155420 |
-
-Check live status:
-
-```http
-GET {apiBaseUrl}/gasless-status
-```
-
-Response includes `enabled`, `supportedChainIds`, and `relayerAddress`.
-
-***
-
-## How it works
-
-```mermaid
-sequenceDiagram
-  participant App
-  participant SDK
-  participant Allocator
-  participant SIO as epoch-sio relayer
-  participant Chain
-
-  App->>SDK: setupSmartAccount({ chainId })
-  SDK->>App: User signs EIP-7702 authorization
-  SDK->>Allocator: POST /relay-enable-delegation
-  Allocator->>SIO: Queue RELAY_7702 enable
-  SIO->>Chain: Type-4 tx sets EOA delegation
-
-  App->>SDK: solveIntent({ gasless: true, quoteResult, ... })
-  SDK->>App: User signs Compact sponsor (EIP-712)
-  SDK->>Allocator: POST /relay-deposit
-  Allocator->>SIO: Queue RELAY_7702 deposit batch
-  SIO->>Chain: Approve + deposit (relayer pays gas)
-  SDK-->>App: allocationResponse, gaslessUsed: true
-```
-
-### Wallet modes
-
-| Wallet type | `account.type` | Gasless relay UI | Deposit path |
-| ----------- | -------------- | ---------------- | ------------ |
-| **Local signer** (viem `privateKeyToAccount`) | `local` | Shown | SIO relay after 7702 setup |
-| **Injected wallet** (MetaMask, Rainbow, etc.) | `json-rpc` | Hidden | Wallet-paid; EIP-5792 atomic batch when supported |
-
-Injected wallets **cannot** use SIO gasless relay for 7702 enable — MetaMask must sign the authorization itself. The SDK falls back to wallet-paid `depositToCompact` with batching.
+| Polygon Amoy | 80002 |
 
 ***
 
 ## SDK integration
 
-**Package:** `@epoch-protocol/epoch-intents-sdk` (gasless APIs ship on the `feat/gasless-7702` branch; publish target `1.0.27+`).
+**Package:** `@epoch-protocol/epoch-intents-sdk`
 
-### Constructor options
-
-```typescript
-new EpochIntentSDK({
-  apiBaseUrl: "https://testnet-dev.epochprotocol.xyz",
-  walletClient,
-  gaslessDefault: false, // when true, solveIntent uses relay unless gasless: false
-});
-```
-
-### 1. Probe wallet support
+### 1. Check wallet and chain support
 
 ```typescript
 const status = await sdk.getWalletGaslessStatus(chainId);
-// status.delegation: "none" | "epoch" | "other"
-// status.is7702Capable, status.needsSetup, status.canRelayDeposit, ...
+
+if (!status.canRelayDeposit) {
+  // Hide gasless option or show setup instructions
+}
 ```
 
-Or import helpers:
+Useful fields: `delegation`, `needsSetup`, `canRelayDeposit`, `accountType` (`"local"` | `"json-rpc"`).
+
+### 2. Enable smart account (local wallets only)
+
+Call once per EOA and chain before the first gasless solve. The user signs an authorization; the allocator broadcasts setup.
 
 ```typescript
-import {
-  getWalletGaslessStatus,
-  GASLESS_SUPPORTED_CHAIN_IDS,
-  shouldUseGaslessRelay,
-} from "@epoch-protocol/epoch-intents-sdk";
-```
-
-### 2. One-time smart-account setup (local signers)
-
-```typescript
-const setup = await sdk.setupSmartAccount({ chainId: 84532 });
+const setup = await sdk.convertToSmartAccount({ chainId: 84532 });
 if (!setup.ok) {
   throw new Error(setup.reason ?? "Smart account setup failed");
 }
-// setup.delegation === "epoch", setup.txHash from relay (local accounts)
+
+// Legacy alias — still supported
+await sdk.setupSmartAccount({ chainId: 84532 });
 ```
 
-Alternative high-level helper:
+`solveIntent` does **not** auto-convert EOAs. If you pass `allowGaslessSmartAccount: true` without prior setup, the SDK throws `GaslessUnavailableError`.
 
-```typescript
-const ready = await sdk.ensureGaslessReady({ chainId: 84532 });
-```
-
-### 3. Gasless solve
+### 3. Submit a gasless intent
 
 ```typescript
 const result = await sdk.solveIntent({
@@ -130,119 +78,143 @@ const result = await sdk.solveIntent({
   taskTypeString,
   intentData,
   quoteResult,
-  gasless: true, // strict: throws on relay failure (no wallet fallback)
+  gasless: true,
+  allowGaslessSmartAccount: true, // required for local private-key wallets
   onExecutionStatus: (s) => console.log(s.phase),
 });
 
-console.log(result.gaslessUsed); // true when relay handled the deposit
+if (result.gaslessUsed) {
+  console.log("Deposit relayed — user did not pay gas");
+}
 ```
 
-| `gasless` param | Behavior |
-| --------------- | -------- |
-| `true` | Use relay; **throw** if relay unavailable |
-| `false` | Wallet-paid deposit |
-| omitted | Uses `gaslessDefault`; may fall back to wallet-paid on relay failure |
-
-### Standalone gasless deposit
-
-For custom flows without full `solveIntent`:
+Optional config default:
 
 ```typescript
-await sdk.gaslessDepositToCompact({
-  chainId: 84532,
-  tokenAddress,
-  amount: depositAmountWei,
-  // ... Compact sponsor fields from quote
+new EpochIntentSDK({
+  apiBaseUrl,
+  walletClient,
+  allowGaslessSmartAccount: true,
+  gaslessDefault: false,
 });
 ```
+
+### Parameter reference
+
+| Param | Behavior |
+| ----- | -------- |
+| `gasless: true` + `allowGaslessSmartAccount: true` | Local wallet: use gasless relay; throw on failure (no silent fallback to wallet-paid gas) |
+| `gasless: true` (browser wallet, no allow flag) | Wallet-paid execution; batch when the wallet already supports it |
+| `gasless: false` | Standard wallet-paid deposit |
+| omitted | Uses `gaslessDefault` from SDK config |
+
+### Browser wallets
+
+The SDK **does not** ask injected wallets to upgrade to a smart account. If the wallet is already a smart wallet, approve + deposit may batch in one prompt. Otherwise transactions run sequentially and the user pays gas.
+
+Gasless **relay** (allocator-sponsored gas) is intended for **local signers** in scripts and backend flows.
 
 ### Errors
 
-`GaslessUnavailableError` (`code: "GASLESS_UNAVAILABLE"`) — chain disabled, wallet not delegated, relayer down, or relay rejected. See [Error Handling](error-handling.md).
+| Error | What to do |
+| ----- | ---------- |
+| `GaslessUnavailableError` | Chain not enabled, smart account not set up, or relay unavailable — call `convertToSmartAccount` or fall back to `gasless: false` |
+| `INTENT_TASK_INVALID` | Swap intents need different `tokenIn` and `tokenOut` (e.g. USDC → DAI, not USDC → USDC) |
+| `NO_QUOTE_AVAILABLE` | Retry quote; confirm tokens are supported on the testnet graph |
+
+See [Error Handling](error-handling.md).
 
 ***
 
-## Local private-key wallet (dev / test)
+## End-to-end test script
 
-Use a viem local account so `walletClient.account.type === "local"` and `signAuthorization` is available:
+Use the SDK example to validate your integration against a gasless-enabled allocator:
 
-```typescript
-import { createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { baseSepolia } from "viem/chains";
+**Script:** `smallocator/sdk/test/local-wallet-gasless.ts`
 
-const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
-const walletClient = createWalletClient({
-  account,
-  chain: baseSepolia,
-  transport: http(),
-});
+### Setup
 
-const sdk = new EpochIntentSDK({ apiBaseUrl, walletClient });
-await sdk.setupSmartAccount({ chainId: baseSepolia.id });
-// ... getTaskData → getIntentQuote → solveIntent({ gasless: true })
+Create `smallocator/sdk/.env.local` (do not commit private keys):
+
+```bash
+GASLESS_API_BASE_URL=https://testnet-dev.epochprotocol.xyz
+# Or your local allocator: http://localhost:3000
+
+GASLESS_CHAIN_ID=84532
+GASLESS_RPC_URL=https://sepolia.base.org
+GASLESS_PRIVATE_KEY=0x...   # funded test EOA on Base Sepolia
+
+# Swap intent — tokenIn and tokenOut must differ
+INTENT_TOKEN_IN=0x2BB4FfD7E2c6D432b697554Efd77fA13bdbefd69   # USDC Base Sepolia
+INTENT_TOKEN_OUT=0xc30f1Ce05d1434d484E9A47283aA925fc8A8699a  # DAI Base Sepolia
+INTENT_AMOUNT_IN=1
+INTENT_TOKEN_DECIMALS=18
+INTENT_DEST_CHAIN_ID=84532
 ```
 
-Runnable examples in `smallocator/sdk`:
+Fund the test wallet with testnet ETH. Point `GASLESS_API_BASE_URL` at an allocator with gasless enabled.
 
-| Script | Command |
-| ------ | ------- |
-| `test/integration-gasless-example.ts` | `pnpm example:gasless` |
-| `test/local-wallet-gasless.ts` | `pnpm example:local-wallet` |
+### Run
 
-**compact-demo-epoch** adds a UI **Local signer** tab (private key + chain picker) so gasless can be tested without MetaMask. See [compact-demo-epoch](../integration-examples.md#compact-demo-epoch).
+```bash
+cd smallocator/sdk
+pnpm build
+pnpm example:local-wallet
+```
+
+On success:
+
+```text
+=== PASS === Local wallet gasless flow complete.
+```
+
+Optional env flags:
+
+| Env | Effect |
+| --- | ------ |
+| `SKIP_SETUP=1` | Skip smart-account setup; probe + intent only |
+| `SKIP_INTENT=1` | Setup + verify only |
+
+### What the script demonstrates
+
+```typescript
+const sdk = new EpochIntentSDK({ apiBaseUrl, walletClient });
+
+await sdk.getWalletGaslessStatus(chainId);
+await sdk.convertToSmartAccount({ chainId });
+await sdk.verifySmartAccountWorks({ chainId });
+
+const quoteResult = await sdk.getIntentQuote({
+  sponsorAddress,
+  taskTypeString,
+  intentData,
+  isNative: false,
+});
+
+const result = await sdk.solveIntent({
+  sponsorAddress: account.address,
+  taskTypeString,
+  intentData,
+  quoteResult,
+  gasless: true,
+  allowGaslessSmartAccount: true,
+});
+
+await sdk.getIntentStatus(account.address, result.nonce!);
+```
+
+Other example: `pnpm example:gasless` (`test/integration-gasless-example.ts`).
 
 ***
 
-## Widget integration
+## Reference UI
 
-`@epoch-protocol/epoch-intent-widget` exposes gasless on Pay/Swap flows (`feat/gasless-7702`):
-
-| Prop | Default | Description |
-| ---- | ------- | ----------- |
-| `allowGasless` | `true` | Show gasless toggle when wallet + chain support it |
-| `gasless` | `false` | Initial or controlled gasless state |
-
-The widget probes 7702 capability via `useGaslessWallet`, renders `GaslessEnableButton`, and passes `gasless` into the intent flow. Injected wallets skip the relay UI and use wallet batching.
-
-See [Widget Integration Guide](widget-integration.md#gasless-deposits-testnet).
-
-***
-
-## Allocator API (gasless routes)
-
-Public routes on the smallocator service (no SIO auth token required from the client — allocator forwards to SIO):
-
-| Method | Path | Purpose |
-| ------ | ---- | ------- |
-| `GET` | `/gasless-status` | Feature flag, supported chains, relayer address |
-| `POST` | `/relay-enable-delegation` | Broadcast 7702 enable after user signs authorization |
-| `POST` | `/relay-deposit` | Relay approve + Compact deposit + register batch |
-
-**Operator requirements** (not integrator-facing env vars, but needed for gasless to work on a deployment):
-
-* `GASLESS_ENABLED=true` on smallocator
-* Funded relayer key on epoch-sio (`RELAYER_PRIVATE_KEY` or `EXECUTOR_PRIVATE_KEY`)
-* SIO `RELAY_7702` queue processing enabled
-
-***
-
-## Related PRs (gasless-7702)
-
-| Repository | Branch | Scope |
-| ---------- | ------ | ----- |
-| [smallocator](https://github.com/epochprotocol/smallocator) | `feat/gasless-7702` | SDK gasless APIs, `/relay-*` routes, deposit relay |
-| [epoch-sio](https://github.com/epochprotocol/epoch-sio) | `feat/gassless-7702` | `RELAY_7702` queue, type-4 relay broadcaster |
-| [epoch-commons-sdk](https://github.com/epochprotocol/epoch-commons-sdk) | `feat/gassless-7702` | Shared constants / graph updates |
-| [epoch-flows-sdk](https://github.com/epochprotocol/epoch-flows-sdk) | `feat/gasless-7702` | `CreatePaySessionOptions.gasless`, status events |
-| [epoch-widget](https://github.com/epochprotocol/epoch-widget) | `feat/gasless-7702` | `GaslessEnableButton`, `useGaslessWallet`, widget props |
-| [compact-demo-epoch](https://github.com/Man-Jain/compact-demo-epoch) | `feat/gasless-7702` | Demo UI: gasless toggle + local signer form |
+[compact-demo-epoch](../integration-examples.md#compact-demo-epoch) demonstrates gasless in a React app with a local-signer tab. The widget package does **not** expose gasless mode.
 
 ***
 
 ## Next steps
 
-* [SDK Integration Guide](sdk-integration-guide.md) — full checklist including gasless
+* [SDK Integration Guide](sdk-integration-guide.md) — full integration checklist
 * [SDK Reference](sdk-reference.md) — method signatures
-* [Integration Examples](../integration-examples.md) — compact-demo-epoch reference UI
-* [Supported Chains & Tokens](../supported-chains-and-tokens.md) — testnet chain IDs
+* [Supported Chains & Tokens](../supported-chains-and-tokens.md) — testnet tokens and chain IDs

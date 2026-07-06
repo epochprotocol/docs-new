@@ -244,11 +244,16 @@ const { allocatorAddress, chainConfig } = await response.json();
 
 ```typescript
 const status = await sdk.getWalletGaslessStatus(chainId);
-await sdk.setupSmartAccount({ chainId });
-await sdk.solveIntent({ ...params, quoteResult, gasless: true });
+await sdk.convertToSmartAccount({ chainId }); // one-time setup for local signers
+await sdk.solveIntent({
+  ...params,
+  quoteResult,
+  gasless: true,
+  allowGaslessSmartAccount: true,
+});
 ```
 
-See [Gasless Deposits](gasless-deposits.md). Local signer required for full relay path.
+See [Gasless Deposits](gasless-deposits.md). Headless smoke test: `smallocator/sdk/test/local-wallet-gasless.ts` (`pnpm example:local-wallet`).
 
 ## Task Types
 

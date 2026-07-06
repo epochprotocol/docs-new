@@ -53,7 +53,9 @@ Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queri
 | `src/components/UserBalancesList.tsx` | `getDepositedBalances` |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow |
 
-**Gasless test flow:** connect via **Local signer** tab → switch to Epoch smart account → enable gasless → get quote → deposit + submit intent.
+**Gasless test flow (demo UI):** connect via **Local signer** tab → switch to Epoch smart account → enable gasless → get quote → deposit + submit intent.
+
+**Headless integration test:** `cd smallocator/sdk && pnpm example:local-wallet` — see `test/local-wallet-gasless.ts` and [Gasless Deposits](integration-guides/gasless-deposits.md#local-integration-test-end-to-end).
 
 Best for: React apps with wallet connection, swap/bridge UI patterns, Compact balance management, and gasless testnet demos.
 

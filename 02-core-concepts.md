@@ -16,7 +16,7 @@
 | **Protocol interaction** | A task type where Epoch executes a protocol-specific action (e.g. `buyTicket`) on the destination chain.            |
 | **`extraData`**          | JSON fields describing the protocol and action for protocol-interaction tasks.                                      |
 | **Resource lock**        | Collateral locked via The Compact when server-coordinated execution is required.                                    |
-| **Gasless deposit**      | Testnet option: EIP-7702 delegation + relayer-sponsored Compact approve/deposit; user signs, relayer pays gas.      |
+| **Gasless mode**         | Testnet option: user signs only; smart-wallet batching or relay handles on-chain gas. Treat the whole flow as gasless when enabled. |
 
 ***
 
@@ -118,12 +118,16 @@ Some intents require a **resource lock** — collateral locked on-chain via The 
 
 If your integration uses Compact flows, the SDK may prompt the user for additional deposit and attestation steps. Contact Epoch for partner access to Compact-backed flows.
 
-### Gasless Compact deposits (testnet)
+### Gasless mode (testnet)
 
-On supported testnets, integrators can enable **relay-sponsored deposits**: the user's EOA delegates to an EIP-7702 implementation via a one-time setup, then signs Compact sponsor data while the Epoch relayer submits approve + deposit transactions.
+On supported testnets, enable **gasless mode** so users sign only — on-chain gas is handled via smart-wallet batching (EIP-5792) or relay, depending on wallet type. When gasless is on, the **entire flow** is gasless from the user's perspective.
 
-* **Local / headless signers** — full gasless relay path (`setupSmartAccount` → `solveIntent({ gasless: true })`).
-* **Browser wallets (MetaMask)** — wallet-paid deposits with EIP-5792 batching when available; SIO relay is not used for injected accounts.
+* **Smart wallet active** — approve + deposit (and other steps when supported) batch into one wallet prompt.
+* **No smart wallet** — transactions execute individually (standard path).
+* **SDK / custom UI** — `convertToSmartAccount`, `getWalletGaslessStatus`, `solveIntent({ gasless: true, allowGaslessSmartAccount: true })`.
+* **Local / headless signers** — relay sponsors gas after explicit `convertToSmartAccount`; test with `pnpm example:local-wallet` in `smallocator/sdk`.
+* **Browser wallets** — wallet-paid execution; batching when the wallet is already a smart wallet (SDK does not prompt upgrade).
+* **Widget** — does **not** support gasless; use SDK or compact-demo-epoch.
 
 See [Gasless Deposits](integration-guides/gasless-deposits.md).
 

@@ -15,6 +15,7 @@ new EpochIntentSDK({
   apiBaseUrl: string;      // Epoch allocator URL (no trailing slash)
   walletClient: WalletClient;  // viem wallet client from wagmi or viem
   gaslessDefault?: boolean;  // when true, solveIntent prefers gasless relay on supported chains
+  allowGaslessSmartAccount?: boolean;  // opt in local-wallet gasless relay (also overridable per solveIntent)
 })
 ```
 
@@ -112,10 +113,11 @@ solveIntent(params: {
   onExecutionStatus?: (status: TransactionExecutionStatus) => void;
   collateralType?: CollateralType;  // EVM | Miden — partner flows
   gasless?: boolean;  // opt-in EIP-7702 relay for Compact deposit (testnet)
+  allowGaslessSmartAccount?: boolean;  // local wallet: strict relay; throws if not delegated (no auto-convert)
 }): Promise<{ allocationResponse?: { nonce: string }; gaslessUsed?: boolean; ... }>
 ```
 
-When `gasless: true` on a supported testnet chain with a delegated EOA, the SDK relays approve + Compact deposit via the allocator relayer. The user still signs sponsor data; the relayer pays gas. See [Gasless Deposits](gasless-deposits.md).
+When `gasless: true` on a supported testnet chain, the SDK submits on-chain steps without the user paying gas (relay for local signers with `allowGaslessSmartAccount`; wallet batching for injected smart wallets). Call `convertToSmartAccount({ chainId })` once before the first gasless solve for local private-key wallets. The user still signs authorization and sponsor data. See [Gasless Deposits](gasless-deposits.md).
 
 **Execution status phases** (via `onExecutionStatus`):
 
@@ -185,12 +187,20 @@ Available when using a gasless-enabled allocator (`GET /gasless-status` → `ena
 
 | Method | Purpose |
 |--------|---------|
-| `getWalletGaslessStatus(chainId)` | Probe delegation state, relay eligibility, setup needed |
-| `setupSmartAccount({ chainId })` | Sign 7702 authorization + relay enable (local signers) |
-| `ensureGaslessReady({ chainId })` | Upgrade + setup + verify in one call |
+| `getWalletGaslessStatus(chainId)` | Probe delegation state, relay eligibility, `accountType`, setup needed |
+| `convertToSmartAccount({ chainId })` | One-time smart-account enable for local signers (testnet) |
+| `setupSmartAccount({ chainId })` | Legacy alias for smart-account enable |
+| `ensureGaslessReady({ chainId, allowSetup? })` | Verify readiness; when `allowSetup: false`, does not auto-convert |
 | `setupGaslessWallet({ chainId })` | Alias for smart-account setup |
 | `gaslessDepositToCompact(...)` | Standalone relayed deposit (without full solve) |
-| `revokeGaslessWallet({ chainId })` | Revoke 7702 delegation |
+| `revokeGaslessWallet({ chainId })` | Revoke smart-account delegation |
+
+**Config / solve params**
+
+| Field | Purpose |
+|-------|---------|
+| `allowGaslessSmartAccount?: boolean` | Opt in local-wallet gasless relay (config + `solveIntent`) |
+| `gasless?: boolean` | Use relay when eligible; with `allowGaslessSmartAccount`, throws instead of wallet fallback |
 
 **Exported helpers** (also available from package root):
 
@@ -200,12 +210,13 @@ import {
   getWalletGaslessStatus,
   GASLESS_SUPPORTED_CHAIN_IDS,
   shouldUseGaslessRelay,
+  convertToSmartAccount,
   setupSmartAccount,
   ensureGaslessReady,
 } from "@epoch-protocol/epoch-intents-sdk";
 ```
 
-Full guide: [Gasless Deposits](gasless-deposits.md).
+Local-wallet end-to-end test: `smallocator/sdk/test/local-wallet-gasless.ts` — run with `pnpm example:local-wallet`. See [Gasless Deposits](gasless-deposits.md).
 
 ---
 
