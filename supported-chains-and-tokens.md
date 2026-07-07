@@ -14,7 +14,9 @@ Need testnet tokens? Mint via the [Epoch User Dashboard](https://userdashboard.e
 
 ### Testnet chains
 
-<table><thead><tr><th width="222.22265625">Network</th><th>Chain ID</th></tr></thead><tbody><tr><td>Ethereum Sepolia</td><td>11155111</td></tr><tr><td>Base Sepolia</td><td>84532</td></tr><tr><td>Optimism Sepolia</td><td>11155420</td></tr></tbody></table>
+<table><thead><tr><th width="222.22265625">Network</th><th>Chain ID</th><th>Gasless Compact deposit</th></tr></thead><tbody><tr><td>Ethereum Sepolia</td><td>11155111</td><td>Yes</td></tr><tr><td>Base Sepolia</td><td>84532</td><td>Yes</td></tr><tr><td>Optimism Sepolia</td><td>11155420</td><td>Yes</td></tr></tbody></table>
+
+**Gasless** applies to the Compact approve + deposit step on testnet when using a local signer and a gasless-enabled allocator. See [Gasless Deposits](integration-guides/gasless-deposits.md). Verify live support via `GET {apiBaseUrl}/gasless-status`.
 
 Additional testnet source chains:
 

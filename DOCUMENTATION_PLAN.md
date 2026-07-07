@@ -426,7 +426,9 @@ Epoch Protocol (External Docs)
 * Environment variable reference
 * "Adding a new solver" / internal codebase extension guides
 * Source docs index linking to private repos
-* Smart wallets, ERC-7579 Epoch Module, Safe / 7702 / delegator wallet flows (deprecated for users)
+* Smart wallets, ERC-7579 Epoch Module, Safe / delegator wallet flows (deprecated for end-user onboarding)
+
+**Now documented for integrators (testnet):** optional EIP-7702 gasless Compact deposits — see [Gasless Deposits](integration-guides/gasless-deposits.md). Related PRs: `feat/gasless-7702` / `feat/gassless-7702` across smallocator, epoch-sio, epoch-flows-sdk, epoch-widget, epoch-commons-sdk, compact-demo-epoch.
 
 Internal team documentation should live separately (private Notion, Confluence, or repo READMEs) and is out of scope for this structure.
 

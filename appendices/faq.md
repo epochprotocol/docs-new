@@ -34,7 +34,13 @@ No. Users connect their own wallets and sign transactions. Epoch orchestrates ex
 
 ### What wallet do users need?
 
-A standard EOA wallet: MetaMask, Rainbow, Coinbase Wallet, or any WalletConnect-compatible wallet. No smart-wallet deployment is required.
+A standard EOA wallet: MetaMask, Rainbow, Coinbase Wallet, or any WalletConnect-compatible wallet. No smart-wallet deployment is required for the default integration path.
+
+For testnet gasless flows with a local private-key signer, use the SDK directly — see [Gasless Deposits](../integration-guides/gasless-deposits.md).
+
+### What is gasless in Epoch?
+
+On testnet, **gasless mode** is available via `@epoch-protocol/epoch-intents-sdk` (and headless `@epoch-protocol/epoch-flows-sdk`) — not through `@epoch-protocol/epoch-intent-widget`. Local private-key wallets call `convertToSmartAccount({ chainId })` once, then `solveIntent({ gasless: true, allowGaslessSmartAccount: true })`. Injected wallets use wallet-native batching only when already a smart wallet; the SDK does not prompt upgrade. From the user's perspective the entire intent is gasless when enabled. Runnable test: `pnpm example:local-wallet` in `smallocator/sdk`. See [Gasless Deposits](../integration-guides/gasless-deposits.md). Mainnet gasless is not documented until announced.
 
 ### Do I need the SDK?
 

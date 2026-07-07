@@ -14,6 +14,8 @@ Peer dependency: **viem** ^2.x
 new EpochIntentSDK({
   apiBaseUrl: string;      // Epoch allocator URL (no trailing slash)
   walletClient: WalletClient;  // viem wallet client from wagmi or viem
+  gaslessDefault?: boolean;  // when true, solveIntent prefers gasless relay on supported chains
+  allowGaslessSmartAccount?: boolean;  // opt in local-wallet gasless relay (also overridable per solveIntent)
 })
 ```
 
@@ -110,8 +112,12 @@ solveIntent(params: {
   routingAndLiquidityOptions?: RoutingAndLiquidityOptions;
   onExecutionStatus?: (status: TransactionExecutionStatus) => void;
   collateralType?: CollateralType;  // EVM | Miden — partner flows
-}): Promise<unknown>
+  gasless?: boolean;  // opt-in EIP-7702 relay for Compact deposit (testnet)
+  allowGaslessSmartAccount?: boolean;  // local wallet: strict relay; throws if not delegated (no auto-convert)
+}): Promise<{ allocationResponse?: { nonce: string }; gaslessUsed?: boolean; ... }>
 ```
+
+When `gasless: true` on a supported testnet chain, the SDK submits on-chain steps without the user paying gas (relay for local signers with `allowGaslessSmartAccount`; wallet batching for injected smart wallets). Call `convertToSmartAccount({ chainId })` once before the first gasless solve for local private-key wallets. The user still signs authorization and sponsor data. See [Gasless Deposits](gasless-deposits.md).
 
 **Execution status phases** (via `onExecutionStatus`):
 
@@ -175,6 +181,75 @@ Contact Epoch before exposing Compact flows to end users.
 
 ---
 
+## Gasless methods (testnet)
+
+Available when using a gasless-enabled allocator (`GET /gasless-status` → `enabled: true`).
+
+| Method | Purpose |
+|--------|---------|
+| `getWalletGaslessStatus(chainId)` | Probe delegation state, relay eligibility, `accountType`, setup needed |
+| `convertToSmartAccount({ chainId })` | One-time smart-account enable for local signers (testnet) |
+| `setupSmartAccount({ chainId })` | Legacy alias for smart-account enable |
+| `ensureGaslessReady({ chainId, allowSetup? })` | Verify readiness; when `allowSetup: false`, does not auto-convert |
+| `setupGaslessWallet({ chainId })` | Alias for smart-account setup |
+| `gaslessDepositToCompact(...)` | Standalone relayed deposit (without full solve) |
+| `revokeGaslessWallet({ chainId })` | Revoke smart-account delegation |
+
+**Config / solve params**
+
+| Field | Purpose |
+|-------|---------|
+| `allowGaslessSmartAccount?: boolean` | Opt in local-wallet gasless relay (config + `solveIntent`) |
+| `gasless?: boolean` | Use relay when eligible; with `allowGaslessSmartAccount`, throws instead of wallet fallback |
+
+**Exported helpers** (also available from package root):
+
+```typescript
+import {
+  GaslessUnavailableError,
+  getWalletGaslessStatus,
+  GASLESS_SUPPORTED_CHAIN_IDS,
+  shouldUseGaslessRelay,
+  convertToSmartAccount,
+  setupSmartAccount,
+  ensureGaslessReady,
+} from "@epoch-protocol/epoch-intents-sdk";
+```
+
+Local-wallet end-to-end test: `smallocator/sdk/test/local-wallet-gasless.ts` — run with `pnpm example:local-wallet`. See [Gasless Deposits](gasless-deposits.md) and [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md).
+
+---
+
+## Transaction batching (EIP-5792)
+
+When multiple on-chain calls run on the same chain (Compact approve + deposit, or multi-tx intent execution), the SDK may batch them via `wallet_sendCalls` instead of separate `eth_sendTransaction` calls.
+
+**Strategy probe:**
+
+```typescript
+import {
+  canBatchCalls,
+  resolveWalletBatchStrategy,
+  executeWalletBatch,
+} from "@epoch-protocol/epoch-intents-sdk";
+
+const cap = await canBatchCalls(walletClient, chainId, userAddress, publicClient);
+// { supported, atomic, mode: "atomic" | "sequential-tx" }
+```
+
+| `mode` | Meaning |
+| ------ | ------- |
+| `atomic` | Smart wallet active (7702 delegation or EIP-5792 atomic enabled) — one prompt, atomic batch |
+| `sequential-tx` | Plain EOA or local wallet — separate transactions |
+
+Local private-key wallets always use `sequential-tx` for deposits unless the gasless relay path is enabled. Injected wallets with an active smart account batch approve + deposit automatically inside `depositToCompact` and `solveIntent`.
+
+**Execution status:** multi-leg batched flows report `phase: "batching"` via `onExecutionStatus`.
+
+Full architecture, SIO relay flow, and test commands: [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md).
+
+---
+
 ## Task types
 
 Import from `@epoch-protocol/epoch-commons-sdk`:
@@ -205,6 +280,7 @@ You do **not** need to implement these steps manually when using the SDK:
 ## Next steps
 
 - [SDK Integration Guide](./sdk-integration-guide.md)
+- [Gasless Deposits](./gasless-deposits.md)
 - [Swap & Bridge](./swap-and-bridge.md)
 - [Protocol Interaction](./protocol-interaction.md)
 - [Error Handling](./error-handling.md)

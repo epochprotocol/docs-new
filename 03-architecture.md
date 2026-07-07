@@ -125,6 +125,20 @@ Polled via `getIntentStatus(userAddress, nonce)`. Returns per-transaction status
 
 ***
 
+## Transaction batching & EIP-7702 (optional)
+
+For integrators using Compact deposits or multi-transaction intents:
+
+* **EIP-5792 batching** — when the user's wallet is already a smart account (7702-delegated or atomic-capable), the SDK batches contiguous same-chain calls into one `wallet_sendCalls` prompt.
+* **EIP-7702 gasless relay (testnet)** — local signers can delegate via `convertToSmartAccount`; smallocator validates and forwards to **epoch-sio**, which broadcasts type-4 transactions with a funded relayer key.
+* **Plain EOAs** — approve and deposit run as separate transactions; the user pays gas.
+
+The SDK resolves batch strategy automatically inside `depositToCompact` and `solveIntent`. Probe with `canBatchCalls` or `getWalletGaslessStatus` for UI hints.
+
+See [Transaction Batching & EIP-7702](integration-guides/transaction-batching-and-eip7702.md) for architecture diagrams, operator env vars, and the `local-wallet-gasless.ts` test script.
+
+***
+
 ## Pathfinding
 
 * Integrators **do not configure paths manually**.

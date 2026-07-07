@@ -43,6 +43,7 @@ Users sign with a **standard wallet** (MetaMask, Rainbow, WalletConnect, etc.). 
 | Swap + bridge            | Combined routing in one intent                     | WETH on Optimism → USDC on Base         |
 | Protocol interaction     | Execute an on-chain action after funding           | Buy raffle tickets on Base from Polygon |
 | Resource locks (Compact) | Collateral-backed intents via The Compact          | Partner flows requiring locked deposits |
+| Gasless mode (testnet) | Sign-only UX — smart wallet batches or relay handles on-chain gas | Testnet; see [Gasless Deposits](integration-guides/gasless-deposits.md) and [Transaction Batching & EIP-7702](integration-guides/transaction-batching-and-eip7702.md) |
 
 ***
 
@@ -77,6 +78,7 @@ This is the recommended pattern for **protocol interaction** integrations. Detai
 * **Reverse quotes** are required when the output amount is fixed (e.g. ticket price × quantity). Pass `tokenInAmount: "0"` and set `minTokenOut` to the required output.
 * **Execution time** depends on cross-chain path complexity; poll intent status rather than assuming instant completion.
 * **Supported tokens** vary by chain; see [Supported Chains & Tokens](supported-chains-and-tokens.md).
+* **Gasless mode** is testnet-only today; when enabled, treat the whole user flow as gasless. Local wallets: `convertToSmartAccount` then `solveIntent({ gasless: true, allowGaslessSmartAccount: true })`. Test with `pnpm example:local-wallet` in `smallocator/sdk`. See [Gasless Deposits](integration-guides/gasless-deposits.md) and [Transaction Batching & EIP-7702](integration-guides/transaction-batching-and-eip7702.md).
 * **New protocols** require Epoch partner onboarding before `extraData` actions are routable.
 
 ***
@@ -98,4 +100,6 @@ See [Links](links.md) for all official URLs.
 * [Core Concepts](02-core-concepts.md) — glossary and intent lifecycle
 * [Architecture](03-architecture.md) — external system view
 * [Quickstart](integration-guides/quickstart.md) — first integration
+* [Gasless Deposits](integration-guides/gasless-deposits.md) — EIP-7702 testnet relay (optional)
+* [Transaction Batching & EIP-7702](integration-guides/transaction-batching-and-eip7702.md) — batching strategy, SIO architecture, test scripts
 * [Integration Examples](integration-examples.md) — reference projects

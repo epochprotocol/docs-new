@@ -33,9 +33,10 @@ Best for: backend scripts, CI smoke tests, understanding the SDK flow before bui
 ## compact-demo-epoch
 
 **Type:** React + Vite + wagmi  
-**Repo:** [github.com/Man-Jain/compact-demo-epoch](https://github.com/Man-Jain/compact-demo-epoch)
+**Repo:** [github.com/Man-Jain/compact-demo-epoch](https://github.com/Man-Jain/compact-demo-epoch)  
+**Branch:** `feat/gasless-7702` — [PR #10](https://github.com/Man-Jain/compact-demo-epoch/pull/10)
 
-Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queries, and withdrawals.
+Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queries, withdrawals, **gasless EIP-7702 deposits**, and a **local private-key signer** for testnet relay testing.
 
 | File | Purpose |
 |------|---------|
@@ -43,11 +44,24 @@ Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queri
 | `src/config/web3.ts` | Token/chain discovery from SDK graphs |
 | `src/config/api.ts` | `VITE_API_BASE_URL` helper |
 | `src/hooks/useAllocatorAPI.ts` | Health check, allocator address |
-| `src/pages/BalancePage.tsx` | Full swap flow: routing preset picker, quote → solve → status |
+| `src/hooks/useEffectiveWallet.ts` | Unified browser wallet + local signer |
+| `src/hooks/useGaslessWallet.ts` | 7702 probe + `setupSmartAccount` |
+| `src/context/LocalSignerContext.tsx` | Private-key wallet client (in-memory) |
+| `src/components/GaslessEnableButton.tsx` | Gasless opt-in / smart-account setup UI |
+| `src/components/WalletConnect.tsx` | Browser wallet + local signer tabs |
+| `src/pages/BalancePage.tsx` | Quote → solve (`gasless: true`, routing preset picker) → status |
 | `src/components/UserBalancesList.tsx` | `getDepositedBalances` |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow |
 
-Best for: React apps with wallet connection, swap/bridge UI patterns, Compact balance management.
+**Gasless test flow (demo UI):** connect via **Local signer** tab → switch to Epoch smart account → enable gasless → get quote → deposit + submit intent.
+
+**Headless integration test (local signer, gasless relay):** `cd smallocator/sdk && pnpm example:local-wallet` — see `test/local-wallet-gasless.ts` and [Gasless Deposits](integration-guides/gasless-deposits.md#local-wallet--gasless-relay).
+
+**Injected wallet batch probe:** [`scripts/injected-wallet-batch-probe.ts`](scripts/injected-wallet-batch-probe.ts) — copy into a wagmi app; user-paid batching only (not gasless relay).
+
+Best for: React apps with wallet connection, swap/bridge UI patterns, Compact balance management, and gasless testnet demos.
+
+See [Gasless Deposits](integration-guides/gasless-deposits.md).
 
 ---
 

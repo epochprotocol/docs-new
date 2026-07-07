@@ -16,6 +16,7 @@
 | **Protocol interaction** | A task type where Epoch executes a protocol-specific action (e.g. `buyTicket`) on the destination chain.            |
 | **`extraData`**          | JSON fields describing the protocol and action for protocol-interaction tasks.                                      |
 | **Resource lock**        | Collateral locked via The Compact when server-coordinated execution is required.                                    |
+| **Gasless mode**         | Testnet option: user signs only; smart-wallet batching or relay handles on-chain gas. Treat the whole flow as gasless when enabled. |
 
 ***
 
@@ -116,6 +117,19 @@ Protocol and action are identified by **keccak256 hashes of their string names**
 Some intents require a **resource lock** — collateral locked on-chain via The Compact before Epoch executes server-side. The quote response includes `resourceLockRequired: true` when this applies.
 
 If your integration uses Compact flows, the SDK may prompt the user for additional deposit and attestation steps. Contact Epoch for partner access to Compact-backed flows.
+
+### Gasless mode (testnet)
+
+On supported testnets, enable **gasless mode** so users sign only — on-chain gas is handled via smart-wallet batching (EIP-5792) or relay, depending on wallet type. When gasless is on, the **entire flow** is gasless from the user's perspective.
+
+* **Smart wallet active** — approve + deposit (and other steps when supported) batch into one wallet prompt via EIP-5792 `wallet_sendCalls`.
+* **No smart wallet** — transactions execute individually (standard path).
+* **SDK / custom UI** — `convertToSmartAccount`, `getWalletGaslessStatus`, `solveIntent({ gasless: true, allowGaslessSmartAccount: true })`.
+* **Local / headless signers** — relay sponsors gas after explicit `convertToSmartAccount`; test with `pnpm example:local-wallet` in `smallocator/sdk`.
+* **Browser wallets** — wallet-paid execution; batching when the wallet is already a smart wallet (SDK does not prompt upgrade).
+* **Widget** — does **not** support gasless; use SDK or compact-demo-epoch.
+
+See [Gasless Deposits](integration-guides/gasless-deposits.md) and [Transaction Batching & EIP-7702](integration-guides/transaction-batching-and-eip7702.md).
 
 ***
 

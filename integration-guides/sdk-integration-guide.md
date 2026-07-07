@@ -15,6 +15,7 @@ Add Epoch cross-chain intent flows to any JavaScript/TypeScript project using `@
 - [ ] Fetch allocator address via sdk.getHealthCheck() (do not hard-code)
 - [ ] Implement: getTaskData → getIntentQuote → solveIntent → getIntentStatus
 - [ ] Use testnetGraph/mainnetGraph for token/chain discovery
+- [ ] (Optional, testnet) Gasless Compact deposits: `convertToSmartAccount` → `solveIntent({ gasless: true, allowGaslessSmartAccount: true })` — see [Gasless Deposits](gasless-deposits.md)
 ```
 
 ***
@@ -247,6 +248,38 @@ const health = await sdk.getHealthCheck();
 const { allocatorAddress, chainConfig } = health;
 ```
 
+### 7. Gasless mode (testnet, optional)
+
+**Local private-key wallets:** users sign only — the allocator relays Compact deposits via epoch-sio (gasless). **Injected wallets:** gasless relay is not available; the SDK may batch calls via `wallet_sendCalls` when the wallet is already a smart account, but the user pays gas:
+
+```typescript
+// One-time explicit smart-account conversion (local private-key wallet)
+await sdk.convertToSmartAccount({ chainId: 84532 });
+
+const result = await sdk.solveIntent({
+  // ...standard solve params
+  quoteResult,
+  gasless: true,
+  allowGaslessSmartAccount: true, // local wallet: strict relay, no auto-convert
+});
+
+if (result.gaslessUsed) {
+  console.log("Gasless path used — user did not pay on-chain gas");
+}
+```
+
+**Injected wallets:** SDK does not prompt smart-wallet upgrade. Gasless relay is for local signers; browser wallets use wallet-paid execution with optional batching when already a smart wallet.
+
+Probe before showing UI:
+
+```typescript
+const status = await sdk.getWalletGaslessStatus(chainId);
+```
+
+**Local integration test:** `cd smallocator/sdk && pnpm example:local-wallet` — see [Gasless Deposits](gasless-deposits.md#local-integration-test-end-to-end).
+
+Full guide: [Gasless Deposits](gasless-deposits.md). Architecture, batching, and SIO relay: [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md).
+
 ***
 
 ## Task Types
@@ -286,7 +319,11 @@ import {
 | `src/config/web3.ts`                      | Token/chain discovery from graphs      |
 | `src/config/api.ts`                       | `VITE_API_BASE_URL` helper             |
 | `src/hooks/useAllocatorAPI.ts`            | Health check, allocator address        |
-| `src/pages/BalancePage.tsx`               | Full swap flow: quote → solve → status |
+| `src/hooks/useEffectiveWallet.ts`           | Browser wallet + local signer          |
+| `src/hooks/useGaslessWallet.ts`             | Gasless probe + smart-account setup    |
+| `src/components/GaslessEnableButton.tsx`    | Gasless toggle UI                      |
+| `src/components/WalletConnect.tsx`          | RainbowKit + local signer form         |
+| `src/pages/BalancePage.tsx`               | Quote → solve (`gasless`) → status     |
 | `src/components/UserBalancesList.tsx`     | `getDepositedBalances`                 |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow                 |
 
@@ -305,5 +342,7 @@ import {
 ## Next steps
 
 * [SDK Reference](sdk-reference.md) — full method documentation
+* [Gasless Deposits](gasless-deposits.md) — EIP-7702 testnet relay
+* [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md) — EIP-5792 batching, SIO architecture, test scripts
 * [Error Handling](error-handling.md)
 * [Integration Examples](../integration-examples.md)
