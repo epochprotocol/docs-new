@@ -216,7 +216,37 @@ import {
 } from "@epoch-protocol/epoch-intents-sdk";
 ```
 
-Local-wallet end-to-end test: `smallocator/sdk/test/local-wallet-gasless.ts` — run with `pnpm example:local-wallet`. See [Gasless Deposits](gasless-deposits.md).
+Local-wallet end-to-end test: `smallocator/sdk/test/local-wallet-gasless.ts` — run with `pnpm example:local-wallet`. See [Gasless Deposits](gasless-deposits.md) and [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md).
+
+---
+
+## Transaction batching (EIP-5792)
+
+When multiple on-chain calls run on the same chain (Compact approve + deposit, or multi-tx intent execution), the SDK may batch them via `wallet_sendCalls` instead of separate `eth_sendTransaction` calls.
+
+**Strategy probe:**
+
+```typescript
+import {
+  canBatchCalls,
+  resolveWalletBatchStrategy,
+  executeWalletBatch,
+} from "@epoch-protocol/epoch-intents-sdk";
+
+const cap = await canBatchCalls(walletClient, chainId, userAddress, publicClient);
+// { supported, atomic, mode: "atomic" | "sequential-tx" }
+```
+
+| `mode` | Meaning |
+| ------ | ------- |
+| `atomic` | Smart wallet active (7702 delegation or EIP-5792 atomic enabled) — one prompt, atomic batch |
+| `sequential-tx` | Plain EOA or local wallet — separate transactions |
+
+Local private-key wallets always use `sequential-tx` for deposits unless the gasless relay path is enabled. Injected wallets with an active smart account batch approve + deposit automatically inside `depositToCompact` and `solveIntent`.
+
+**Execution status:** multi-leg batched flows report `phase: "batching"` via `onExecutionStatus`.
+
+Full architecture, SIO relay flow, and test commands: [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md).
 
 ---
 

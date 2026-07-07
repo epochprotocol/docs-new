@@ -240,20 +240,37 @@ const response = await fetch(`${apiBaseUrl}/health`);
 const { allocatorAddress, chainConfig } = await response.json();
 ```
 
-### 7. Gasless Compact deposits (testnet)
+### 7. Gasless vs batching (testnet)
+
+**Gasless SIO relay — local private-key wallets only:**
 
 ```typescript
 const status = await sdk.getWalletGaslessStatus(chainId);
-await sdk.convertToSmartAccount({ chainId }); // one-time setup for local signers
+await sdk.convertToSmartAccount({ chainId }); // local signers only — never for MetaMask/Rainbow
 await sdk.solveIntent({
   ...params,
   quoteResult,
   gasless: true,
-  allowGaslessSmartAccount: true,
+  allowGaslessSmartAccount: true, // required for local relay; throws without prior convertToSmartAccount
 });
 ```
 
-See [Gasless Deposits](gasless-deposits.md). Headless smoke test: `smallocator/sdk/test/local-wallet-gasless.ts` (`pnpm example:local-wallet`).
+**Injected wallets — batching only (user pays gas):**
+
+```typescript
+const cap = await canBatchCalls(walletClient, chainId, address, publicClient);
+// strategy.mode "atomic" → one wallet_sendCalls prompt when smart wallet active
+await sdk.solveIntent({ ...params, quoteResult, gasless: false }); // no allowGaslessSmartAccount
+```
+
+`shouldUseGaslessRelay(walletClient)` is true only when `account.type === "local"`.
+
+See [Gasless Deposits](gasless-deposits.md), [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md), and Cursor skill `.cursor/skills/epoch-gasless-batching/SKILL.md`.
+
+| Test | Command / path |
+| ---- | -------------- |
+| Local gasless smoke test | `smallocator/sdk` → `pnpm example:local-wallet` |
+| Injected batch probe | `scripts/injected-wallet-batch-probe.ts` |
 
 ## Task Types
 
@@ -277,6 +294,9 @@ import {
   createLockTag,
   getTokenId,
   getAllocatorId,
+  canBatchCalls,
+  resolveWalletBatchStrategy,
+  shouldUseGaslessRelay,
 } from "@epoch-protocol/epoch-intents-sdk";
 ```
 
@@ -303,10 +323,14 @@ import {
 - Wrong `destinationChainId` type — pass as **string** (e.g. `"84532"`)
 - Using mainnet API URL on testnet chains (or vice versa)
 - Forgetting viem `walletClient` must have `.chain` and `.account` set
+- Calling `convertToSmartAccount` or showing "gasless" UI for injected browser wallets
+- Passing `allowGaslessSmartAccount: true` without local `convertToSmartAccount` setup
 
 ## Additional Resources
 
 - Full API endpoints, error handling, EIP-712 details: [reference.md](reference.md)
 - Gasless EIP-7702 deposits: [gasless-deposits.md](gasless-deposits.md)
+- Transaction batching & SIO relay: [transaction-batching-and-eip7702.md](transaction-batching-and-eip7702.md)
+- Gasless/batching Cursor skill: [.cursor/skills/epoch-gasless-batching/SKILL.md](../.cursor/skills/epoch-gasless-batching/SKILL.md)
 - SDK source guide: `smallocator/sdk/skills.md`
 - Working demo: `compact-demo-epoch/`

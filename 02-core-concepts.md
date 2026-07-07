@@ -122,14 +122,14 @@ If your integration uses Compact flows, the SDK may prompt the user for addition
 
 On supported testnets, enable **gasless mode** so users sign only — on-chain gas is handled via smart-wallet batching (EIP-5792) or relay, depending on wallet type. When gasless is on, the **entire flow** is gasless from the user's perspective.
 
-* **Smart wallet active** — approve + deposit (and other steps when supported) batch into one wallet prompt.
+* **Smart wallet active** — approve + deposit (and other steps when supported) batch into one wallet prompt via EIP-5792 `wallet_sendCalls`.
 * **No smart wallet** — transactions execute individually (standard path).
 * **SDK / custom UI** — `convertToSmartAccount`, `getWalletGaslessStatus`, `solveIntent({ gasless: true, allowGaslessSmartAccount: true })`.
 * **Local / headless signers** — relay sponsors gas after explicit `convertToSmartAccount`; test with `pnpm example:local-wallet` in `smallocator/sdk`.
 * **Browser wallets** — wallet-paid execution; batching when the wallet is already a smart wallet (SDK does not prompt upgrade).
 * **Widget** — does **not** support gasless; use SDK or compact-demo-epoch.
 
-See [Gasless Deposits](integration-guides/gasless-deposits.md).
+See [Gasless Deposits](integration-guides/gasless-deposits.md) and [Transaction Batching & EIP-7702](integration-guides/transaction-batching-and-eip7702.md).
 
 ***
 

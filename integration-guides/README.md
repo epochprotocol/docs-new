@@ -7,6 +7,7 @@ Step-by-step guides for integrating Epoch Protocol using the **`@epoch-protocol/
 | [Quickstart](quickstart.md) | Minimal integration in your app |
 | [SDK Integration Guide](sdk-integration-guide.md) | Full checklist, patterns, and code examples |
 | [Gasless Deposits](gasless-deposits.md) | EIP-7702 testnet relay for Compact deposits |
+| [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md) | EIP-5792 batching, 7702 delegation, SIO relay architecture, and test scripts |
 | [Integrate Epoch](integrate-epoch.md) | Canonical SDK integration source (agent-oriented) |
 | [SDK Reference](sdk-reference.md) | Method-level documentation |
 | [Swap & Bridge](swap-and-bridge.md) | Forward and reverse quotes |

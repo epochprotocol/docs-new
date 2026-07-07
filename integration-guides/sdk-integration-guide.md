@@ -250,7 +250,7 @@ const { allocatorAddress, chainConfig } = health;
 
 ### 7. Gasless mode (testnet, optional)
 
-When gasless is enabled, users sign only — the SDK and wallet handle on-chain gas via smart-wallet batching or relay:
+**Local private-key wallets:** users sign only — the allocator relays Compact deposits via epoch-sio (gasless). **Injected wallets:** gasless relay is not available; the SDK may batch calls via `wallet_sendCalls` when the wallet is already a smart account, but the user pays gas:
 
 ```typescript
 // One-time explicit smart-account conversion (local private-key wallet)
@@ -278,7 +278,7 @@ const status = await sdk.getWalletGaslessStatus(chainId);
 
 **Local integration test:** `cd smallocator/sdk && pnpm example:local-wallet` — see [Gasless Deposits](gasless-deposits.md#local-integration-test-end-to-end).
 
-Full guide: [Gasless Deposits](gasless-deposits.md).
+Full guide: [Gasless Deposits](gasless-deposits.md). Architecture, batching, and SIO relay: [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md).
 
 ***
 
@@ -343,5 +343,6 @@ import {
 
 * [SDK Reference](sdk-reference.md) — full method documentation
 * [Gasless Deposits](gasless-deposits.md) — EIP-7702 testnet relay
+* [Transaction Batching & EIP-7702](transaction-batching-and-eip7702.md) — EIP-5792 batching, SIO architecture, test scripts
 * [Error Handling](error-handling.md)
 * [Integration Examples](../integration-examples.md)

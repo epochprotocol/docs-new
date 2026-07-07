@@ -55,7 +55,9 @@ Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queri
 
 **Gasless test flow (demo UI):** connect via **Local signer** tab → switch to Epoch smart account → enable gasless → get quote → deposit + submit intent.
 
-**Headless integration test:** `cd smallocator/sdk && pnpm example:local-wallet` — see `test/local-wallet-gasless.ts` and [Gasless Deposits](integration-guides/gasless-deposits.md#local-integration-test-end-to-end).
+**Headless integration test (local signer, gasless relay):** `cd smallocator/sdk && pnpm example:local-wallet` — see `test/local-wallet-gasless.ts` and [Gasless Deposits](integration-guides/gasless-deposits.md#local-wallet--gasless-relay).
+
+**Injected wallet batch probe:** [`scripts/injected-wallet-batch-probe.ts`](scripts/injected-wallet-batch-probe.ts) — copy into a wagmi app; user-paid batching only (not gasless relay).
 
 Best for: React apps with wallet connection, swap/bridge UI patterns, Compact balance management, and gasless testnet demos.
 
