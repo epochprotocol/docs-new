@@ -38,7 +38,7 @@ Rules for AI agents reading these docs:
 - [Swap & Bridge](https://docs.epochprotocol.xyz/integration-guides/swap-and-bridge.md): `GetTokenOut` flows, forward vs reverse quotes, approvals, and displaying quotes.
 - [Protocol Interaction](https://docs.epochprotocol.xyz/integration-guides/protocol-interaction.md): `ProtocolInteraction` tasks, protocol/action keccak256 identifiers, extraData schemas, and the Kismet buy-ticket pattern.
 - [Miden -> EVM Lending](https://docs.epochprotocol.xyz/integration-guides/miden-lending.md): Fund EVM lending/earn deposits from Miden testnet USDC via P2IDE note collateral, origin-chain override, and marketUid schema.
-- [Widget Integration](https://docs.epochprotocol.xyz/integration-guides/widget-integration.md): Embed `EpochIntentWidget` (Pay / Swap / Earn modes), providers, the api prop, theming, callbacks, and testnet.
+- [Widget Integration](https://docs.epochprotocol.xyz/integration-guides/widget-integration.md): Embed `EpochIntentWidget` (Pay / Swap / Earn modes, incl. cross-chain/Miden Smart Withdraw), providers, the api prop, theming, callbacks, and testnet.
 - [Error Handling](https://docs.epochprotocol.xyz/integration-guides/error-handling.md): HTTP status codes, SDK error classes, error categories with user messages, quote failures, polling, and retry guidance.
 - [Integration Examples](https://docs.epochprotocol.xyz/integration-examples.md): Working reference repos — epoch-integration-demo (Node CLI), compact-demo-epoch (React), Kismet (production dApp), and miden-integration-example.
 - [API Access](https://docs.epochprotocol.xyz/api-access.md): Note that all integrations should use the SDK; how to get production/mainnet access and partner onboarding.

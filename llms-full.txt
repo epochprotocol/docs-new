@@ -339,7 +339,7 @@ Format: `"action": "protocol:action"` with `tokens`, `chainIds`, optional `proto
 | -------- | ------------------------------------- |
 | **Pay**  | Send/settle; flexible or fixed source |
 | **Swap** | Exchange via DEX solvers              |
-| **Earn** | Deposit/withdraw via earn solver      |
+| **Earn** | Deposit + cross-chain/Miden Smart Withdraw via earn solver |
 
 ### API (SIO)
 

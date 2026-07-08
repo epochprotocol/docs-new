@@ -322,6 +322,47 @@ Earn-specific notes:
 
 See [BEHAVIOR.md → Earn](./BEHAVIOR.md#earn) for every earn case and caveat.
 
+#### Smart Withdraw
+
+**What it is.** In the withdraw tab, the **Smart Withdraw** toggle ("Auto-bridge & swap to any chain") lets the user redeem a lending position and receive the proceeds on a **different chain and/or token** — or on a **Miden** account — instead of the underlying on its native chain. Toggle off = the classic behaviour (receive the underlying where the position lives).
+
+Under the hood it's a **2-leg intent**, not a new contract:
+
+1. **Withdraw** the position → underlying, on the position's source chain.
+2. **Swap / bridge** that underlying to the chosen destination chain + token (or bridge to Miden).
+
+Both legs are fused into a single **EIP-5792 `wallet_sendCalls`** batch — `[withdraw, approve, depositERC20AndRegister]` into The Compact — then submitted as one allocation. So it's **1 wallet prompt** on a smart-account / EIP-7702 wallet, or **2 sequential prompts** on a plain EOA (withdraw, then deposit — no separate approve). The widget capability-detects and falls back automatically — see [Transaction Batching & EIP-7702](./transaction-batching-and-eip7702.md) for the batching internals.
+
+**Integrator setup.**
+
+- **EVM → EVM:** nothing extra. The toggle ships inside `mode="earn"`'s withdraw tab — the same `EpochIntentWidget` config that renders Earn already exposes it.
+- **EVM → Miden** (testnet only): pass the same **`earnMiden`** adapter you use for Miden-funded deposits. The connected Miden account becomes the withdrawal recipient; the receive-token list is the Miden faucet set from the Epoch graph.
+
+```tsx
+<EpochIntentWidget
+  isOpen={open} onClose={close}
+  api={{ baseUrl, positionsBaseUrl }}
+  mode="earn"
+  earnDefaultTab="withdraw"
+  earnMiden={earnMiden}   // only needed to offer Miden as a destination
+/>
+```
+
+**End-user flow.**
+
+1. Earn → **Withdraw** tab → pick a position.
+2. Flip **Smart Withdraw**.
+3. Pick **Destination Chain** + **Receive Token**. For Miden, pick the **Miden** chain option and a Miden token — a Miden wallet must be connected (its account shows under "Recipient (Miden)").
+4. Review the quote — `You receive ≈ X · Minimum Y · 1% slippage`.
+5. Confirm in the wallet. The CTA walks the stages: *Quoting withdrawal… → Quoting swap route… → Preparing… → Confirm in your wallet… → Submitting…*, then `onSuccess` fires on settlement.
+
+**Caveats.**
+
+- **Degenerate route.** Destination = the position's own chain **and** token is an in==out swap → no quote. The CTA disables with "Select a different chain or token." Pick a different chain or token.
+- **Miden destination is testnet-only** and requires a connected Miden wallet + the `earnMiden` adapter. Delivery also depends on the solver network supporting EVM→Miden for the chosen faucet.
+- **1% slippage floor** on the swap leg; the summary shows the guaranteed minimum. There is **no settlement timeout** — add your own if your UX needs one.
+- `onQuote` fires with the receive amount as the user changes destination; do user-facing success work in `onSuccess`.
+
 ---
 
 ## Theming
@@ -417,7 +458,8 @@ Caveats: **Earn has no real testnet** (1delta doesn't index testnet pools — du
 2. Ensure `ONEDELTA_API_KEY` is set on the positions service.
 3. Scope with `earnChainIds` / `earnLenderFilter` as needed.
 4. Hide the Earn entry point on testnet.
-5. (Optional) Pass an `earnMiden` adapter for Miden-funded testnet deposits.
+5. (Optional) Pass an `earnMiden` adapter for Miden-funded testnet deposits **and** to offer Miden as a Smart Withdraw destination.
+6. Smart Withdraw (redeem → any chain/token) needs no extra props for EVM→EVM — it ships in the withdraw tab.
 
 **Theming chrome on the same tokens:**
 
