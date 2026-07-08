@@ -363,6 +363,8 @@ Both legs are fused into a single **EIP-5792 `wallet_sendCalls`** batch — `[wi
 - **1% slippage floor** on the swap leg; the summary shows the guaranteed minimum. There is **no settlement timeout** — add your own if your UX needs one.
 - `onQuote` fires with the receive amount as the user changes destination; do user-facing success work in `onSuccess`.
 
+**Headless / SDK.** Smart Withdraw is a composition, not a single intent — a withdraw (`ProtocolInteraction`) + a swap/bridge (`GetTokenOut`) fused into one EIP-5792 batch over a Compact resource lock. To build it without the widget, see [SDK Reference → Smart Withdraw (headless)](./sdk-reference.md#smart-withdraw-headless) for the exact function sequence.
+
 ---
 
 ## Theming
