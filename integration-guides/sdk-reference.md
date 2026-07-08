@@ -176,8 +176,10 @@ Available for partner integrations using The Compact:
 | `initateDepositWithdrawal(id)` | Initiate forced withdrawal |
 | `disableForcedWithdrawal(id)` | Disable forced withdrawal |
 | `getForcedWithdrawalStatus(id)` | Check withdrawal status |
+| `buildResourceLockCalls(params)` | Build (not send) the Compact leg — returns `{ calls: [approve, depositERC20AndRegister], createAllocationRequest }` for you to batch |
+| `submitAllocation(createAllocationRequest)` | Start solving after the deposit+register lands on-chain (no off-chain sponsor signature — `isRegisteredOnchain: true`) |
 
-Contact Epoch before exposing Compact flows to end users.
+Contact Epoch before exposing Compact flows to end users. `buildResourceLockCalls` / `submitAllocation` are the **build-don't-send** split used by [Smart Withdraw](#smart-withdraw-headless); confirm your SDK build exposes them (`typeof sdk.buildResourceLockCalls === 'function'`) before relying on them.
 
 ---
 
@@ -261,6 +263,83 @@ TaskType.GetTokenOut           // "gettokenout" — swap / bridge
 TaskType.Deposit               // "deposit"
 TaskType.ProtocolInteraction   // "protocol-interaction"
 ```
+
+---
+
+## Smart Withdraw (headless)
+
+**Smart Withdraw** = redeem a lending position and deliver the proceeds to a **different chain/token**, or to a **Miden** account, instead of the underlying on its native chain. It is **not one intent** — you compose two, then fuse them into a single EIP-5792 batch executed over a Compact resource lock. The [widget](widget-integration.md#smart-withdraw) does all of this for you in `mode="earn"`; this recipe is for headless integrations that build their own UI.
+
+**Functions used, in order:**
+
+| Step | SDK function(s) | Purpose |
+|------|-----------------|---------|
+| 1 | `getTaskData` + `getIntentQuote` — `TaskType.ProtocolInteraction` | Quote the **withdraw** leg → returns raw `withdraw(token, amount)` calldata in `transactions[]` (`resourceLockRequired: false`, a direct user tx) |
+| 2 | `getTaskData` + `getIntentQuote` — `TaskType.GetTokenOut` | Quote the **swap/bridge** leg with a `minTokenOut` slippage floor (`resourceLockRequired: true`, solver-executed over the lock) |
+| 3 | `buildResourceLockCalls(...)` | Build the Compact leg → `{ calls: [approve, depositERC20AndRegister], createAllocationRequest }` |
+| 4 | `resolveWalletBatchStrategy` + `executeWalletBatch` | Fuse `[...withdrawTxs, ...lockCalls]` into one `wallet_sendCalls` (1 prompt), or fall back to sequential txs (N prompts) |
+| 5 | `submitAllocation(createAllocationRequest)` | After the batch lands on-chain, start solving |
+| 6 | `getIntentStatus(user, nonce)` | Poll to settlement |
+
+```typescript
+import { EpochIntentSDK, resolveWalletBatchStrategy, executeWalletBatch } from "@epoch-protocol/epoch-intents-sdk";
+import { TaskType } from "@epoch-protocol/epoch-commons-sdk";
+
+const sdk = new EpochIntentSDK({ apiBaseUrl, walletClient });
+
+// 1 — withdraw position → underlying (direct calldata)
+const wTask  = await sdk.getTaskData({ taskType: TaskType.ProtocolInteraction, intentData: withdrawIntent });
+const wQuote = await sdk.getIntentQuote({ sponsorAddress, taskTypeString: wTask.taskTypeString, intentData: wTask.intentData, isNative: false });
+const withdrawTxs = wQuote.transactions;                     // withdraw(token, amount)
+
+// 2 — swap/bridge to the destination, with a slippage floor
+const sTask  = await sdk.getTaskData({ taskType: TaskType.GetTokenOut, intentData: swapIntent, extraDataTypestring, extraData });
+const sQuote = await sdk.getIntentQuote({ sponsorAddress, taskTypeString: sTask.taskTypeString, intentData: sTask.intentData, isNative: false });
+
+// 3 — Compact resource-lock leg (build, don't send)
+const { calls: lockCalls, createAllocationRequest } = await sdk.buildResourceLockCalls({
+  isNative: false, sponsorAddress, taskTypeString: sTask.taskTypeString, intentData: sTask.intentData, quoteResult: sQuote,
+});
+
+// 4 — fuse the legs and execute
+const calls = [
+  ...withdrawTxs.map((t) => ({ to: t.target, data: t.callData, value: BigInt(t.value ?? "0") })),
+  ...lockCalls,
+];
+const strategy = await resolveWalletBatchStrategy({ walletClient, chainId, user: sponsorAddress, publicClient });
+if (strategy.mode === "sequential-tx") {
+  for (const c of calls) { const hash = await walletClient.sendTransaction(c); await publicClient.waitForTransactionReceipt({ hash }); }
+} else {
+  await executeWalletBatch({ walletClient, chainId, account: sponsorAddress, calls, forceAtomic: strategy.mode === "atomic" });
+}
+
+// 5 + 6 — register is verified on-chain → start solving → poll
+const { nonce } = await sdk.submitAllocation(createAllocationRequest);
+// poll sdk.getIntentStatus(sponsorAddress, nonce) until settled
+```
+
+**Order matters:** the withdraw must fund the wallet before `depositERC20AndRegister` runs. In one atomic `wallet_sendCalls` this holds by construction; in the `sequential-tx` fallback you must `await` each receipt (as above). Only call `submitAllocation` **after** the batch lands — never submit an allocation for a batch that didn't execute.
+
+**Miden destination.** For EVM→Miden, build the leg-2 `GetTokenOut` like the [Miden → EVM Lending](miden-lending.md) bridge shape — the EVM output slot is the zero sentinel and the real target rides in `extraData`:
+
+```typescript
+const swapIntent = {
+  isNative: false,
+  depositTokenAddress: underlyingAddress,
+  tokenInAmount,
+  outputTokenAddress: "0x0000000000000000000000000000000000000000", // zero sentinel — no EVM output token
+  minTokenOut,
+  destinationChainId: "999999999",                                  // Miden virtual chain id
+  protocolHashIdentifier: "0x000…0",                                // ZERO_BYTES32
+  recipient: sponsorAddress,
+};
+const extraDataTypestring = "string midenRecipientAccount,string midenFaucetId,string midenNoteType";
+const extraData = { midenRecipientAccount, midenFaucetId, midenNoteType: "P2ID" };
+```
+
+Omitting `midenSourceAccount` is what flags the **EVM→Miden** direction to the allocator.
+
+**Availability.** Everything except `buildResourceLockCalls` / `submitAllocation` is in the standard SDK. Those two are the resource-lock **build-don't-send** helpers (see [Compact-related methods](#compact-related-methods)); confirm your `@epoch-protocol/epoch-intents-sdk` build exposes them before shipping, and contact Epoch to enable Compact resource-lock flows.
 
 ---
 

@@ -339,7 +339,7 @@ Format: `"action": "protocol:action"` with `tokens`, `chainIds`, optional `proto
 | -------- | ------------------------------------- |
 | **Pay**  | Send/settle; flexible or fixed source |
 | **Swap** | Exchange via DEX solvers              |
-| **Earn** | Deposit/withdraw via earn solver      |
+| **Earn** | Deposit + cross-chain/Miden Smart Withdraw via earn solver |
 
 ### API (SIO)
 
@@ -1605,6 +1605,8 @@ getHealthCheck(): Promise<HealthCheckResponse>
 | `initateDepositWithdrawal(id)` | Initiate forced withdrawal |
 | `disableForcedWithdrawal(id)` | Disable forced withdrawal |
 | `getForcedWithdrawalStatus(id)` | Check withdrawal status |
+| `buildResourceLockCalls(params)` | Build (not send) the Compact leg → `{ calls: [approve, depositERC20AndRegister], createAllocationRequest }` |
+| `submitAllocation(createAllocationRequest)` | Start solving after the deposit+register lands on-chain |
 
 ## Task types
 
@@ -1615,6 +1617,18 @@ TaskType.GetTokenOut           // "gettokenout" — swap / bridge
 TaskType.Deposit               // "deposit"
 TaskType.ProtocolInteraction   // "protocol-interaction"
 ```
+
+## Smart Withdraw (headless)
+
+Redeem a lending position and deliver proceeds to a different chain/token (or a Miden account). Not one intent — compose two, fuse into one EIP-5792 batch over a Compact resource lock. The widget does this in `mode="earn"`; headless recipe:
+
+1. `getTaskData` + `getIntentQuote` with `TaskType.ProtocolInteraction` → withdraw leg → raw `withdraw(token,amount)` calldata in `transactions[]` (`resourceLockRequired: false`).
+2. `getTaskData` + `getIntentQuote` with `TaskType.GetTokenOut` + a `minTokenOut` slippage floor → swap/bridge leg (`resourceLockRequired: true`).
+3. `buildResourceLockCalls({ sponsorAddress, taskTypeString, intentData, quoteResult })` → `{ calls: [approve, depositERC20AndRegister], createAllocationRequest }`.
+4. Fuse `[...withdrawTxs, ...lockCalls]`; `resolveWalletBatchStrategy` → `executeWalletBatch` (1 prompt) or sequential `sendTransaction` awaiting each receipt (order: withdraw funds the wallet before the deposit).
+5. `submitAllocation(createAllocationRequest)` after the batch lands → poll `getIntentStatus(user, nonce)`.
+
+EVM→Miden dest: leg-2 `GetTokenOut` uses `outputTokenAddress` = zero address, `destinationChainId: "999999999"`, `extraDataTypestring: "string midenRecipientAccount,string midenFaucetId,string midenNoteType"`, `extraData: { midenRecipientAccount, midenFaucetId, midenNoteType: "P2ID" }`. Omitting `midenSourceAccount` flags the EVM→Miden direction. `buildResourceLockCalls`/`submitAllocation` require a resource-lock-enabled SDK build; contact Epoch.
 
 ## What the SDK handles internally
 
