@@ -79,7 +79,7 @@ npm install @epoch-protocol/epoch-intents-sdk @epoch-protocol/epoch-commons-sdk 
 | Miden USDC faucet id     | `0xfc90f0f4da30e51168453b60eafed7`           | Default testnet faucet (6 decimals)                      |
 | Miden USDC decimals      | **6**                                        | Always use 6 for `tokenInAmount` and P2ID note amount    |
 | EVM `tokenIn` sentinel   | `0x0000000000000000000000000000000000000000` | Signals Miden source (not native ETH)                    |
-| `midenNoteType`          | `P2IDE`                                      | Reclaimable note; include `midenReclaimHeight`           |
+| P2IDE reclaim window     | Set when creating the Miden note              | Optional `midenReclaimHeight` in witness; configured on note creation |
 | `protocolHashIdentifier` | `keccak256("dummy-lending")`                 | See [Protocol hash](#protocol-hash)                      |
 
 **Amount rule:** Miden-side amounts are **always in 6-decimal atomic units** (1 USDC = `1_000_000`). EVM market underlyings may use 18 decimals; Epoch converts internally during quoting. **Do not** scale Miden amounts to 18 decimals yourself.
@@ -145,30 +145,41 @@ DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69
 
 ### `extraData` schema (lending + Miden)
 
+Miden bridge intents use **field inclusion**, not an exact suffix string. The witness must declare and include the required Miden → EVM fields (`midenSourceAccount`, `midenFaucetId`, `midenNoteType`, `midenNoteId`). Earn / lending fields and optional extras such as `midenReclaimHeight` may appear before or after the Miden block.
+
+Use the canonical constants exported from `@epoch-protocol/epoch-intents-sdk`:
+
 ```typescript
-extraDataTypestring:
-  "string marketUid,string action,string payAsset," +
-  "string midenSourceAccount,string midenFaucetId," +
-  "string midenNoteType,string midenNoteId,uint256 midenReclaimHeight";
+import {
+  DEPOSIT_EXTRADATA_TYPESTRING,
+  MIDEN_TO_EVM_EXTRA_TYPESTRING,
+} from "@epoch-protocol/epoch-intents-sdk";
+
+const extraDataTypestring =
+  `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING},uint256 midenReclaimHeight`;
 
 extraData: {
   marketUid: "DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
   action: "deposit",
   payAsset: "0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
+  isAll: false,
   midenSourceAccount: "0x<user_miden_account_hex>",
   midenFaucetId: "0xfc90f0f4da30e51168453b60eafed7",
   midenNoteType: "P2IDE",
   midenNoteId: "",                    // empty at quote time; filled after note creation
-  midenReclaimHeight: "1000",         // blocks until user can reclaim unused note
+  midenReclaimHeight: "1000",         // optional — P2IDE reclaim window in blocks
 }
 ```
 
+> **Witness hashing:** Miden and earn fields use `string` (and `bool` / `uint256` where declared) in the typestring. The allocator hashes witness data with EIP-712, matching client signing. The same `witnessTypeString` is forwarded through quote (`/checkIfDepositNeeded`), compact submission, and SIO routing.
+
 | Miden field          | When set                                                                      |
 | -------------------- | ----------------------------------------------------------------------------- |
-| `midenSourceAccount` | Before quote — user's Miden account id (hex)                                  |
-| `midenFaucetId`      | Before quote — faucet id for the asset sent in the note                       |
+| `midenSourceAccount` | Before quote — user's Miden account id (hex, 15 bytes)                        |
+| `midenFaucetId`      | Before quote — faucet id for the asset sent in the note (hex, 15 bytes)       |
+| `midenNoteType`      | Before quote — use `P2IDE` for reclaimable collateral notes                   |
 | `midenNoteId`        | **After** P2IDE creation — SDK writes this into the mandate before `/compact` |
-| `midenReclaimHeight` | Before quote — P2IDE reclaim window                                           |
+| `midenReclaimHeight` | Optional — reclaim window in blocks when using P2IDE                          |
 
 ---
 
@@ -201,6 +212,8 @@ import { TaskType } from "@epoch-protocol/epoch-commons-sdk";
 import {
   CollateralType,
   EpochIntentSDK,
+  DEPOSIT_EXTRADATA_TYPESTRING,
+  MIDEN_TO_EVM_EXTRA_TYPESTRING,
 } from "@epoch-protocol/epoch-intents-sdk";
 import { keccak256, parseUnits, toBytes } from "viem";
 
@@ -244,13 +257,12 @@ const { taskTypeString, intentData } = await sdk.getTaskData({
     recipient: sponsorAddress,
   },
   extraDataTypestring:
-    "string marketUid,string action,string payAsset," +
-    "string midenSourceAccount,string midenFaucetId," +
-    "string midenNoteType,string midenNoteId,uint256 midenReclaimHeight",
+    `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING},uint256 midenReclaimHeight`,
   extraData: {
     marketUid,
     action: "deposit",
     payAsset: underlying,
+    isAll: false,
     midenSourceAccount: midenUserAccountHex,
     midenFaucetId: MIDEN_USDC_FAUCET,
     midenNoteType: "P2IDE",

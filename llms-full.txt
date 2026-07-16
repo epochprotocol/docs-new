@@ -1543,7 +1543,7 @@ getTaskData(params: {
 }): Promise<{ taskTypeString: string; intentData: unknown }>
 ```
 
-**Validation:** Either `tokenInAmount` or `minTokenOut` must be non-zero.
+**Validation:** Either `tokenInAmount` or `minTokenOut` must be non-zero. `extraDataTypestring` and `extraData` must declare the same keys with no spaces around commas. For Miden bridge intents, required Miden fields per direction must be declared in the witness (field inclusion) — protocol fields may appear before or after the Miden block. Canonical constants: `MIDEN_TO_EVM_EXTRA_TYPESTRING`, `EVM_TO_MIDEN_EXTRA_TYPESTRING`, `DEPOSIT_EXTRADATA_TYPESTRING`, `WITHDRAW_EXTRADATA_TYPESTRING`. Shared helpers: `isMidenIntent`, `isEVMToMidenIntent`, `getMidenMetadata`. See sdk-reference.md § Witness typestrings & Miden bridge.
 
 ### `getIntentQuote(params)`
 
@@ -1628,7 +1628,7 @@ Redeem a lending position and deliver proceeds to a different chain/token (or a 
 4. Fuse `[...withdrawTxs, ...lockCalls]`; `resolveWalletBatchStrategy` → `executeWalletBatch` (1 prompt) or sequential `sendTransaction` awaiting each receipt (order: withdraw funds the wallet before the deposit).
 5. `submitAllocation(createAllocationRequest)` after the batch lands → poll `getIntentStatus(user, nonce)`.
 
-EVM→Miden dest: leg-2 `GetTokenOut` uses `outputTokenAddress` = zero address, `destinationChainId: "999999999"`, `extraDataTypestring: "string midenRecipientAccount,string midenFaucetId,string midenNoteType"`, `extraData: { midenRecipientAccount, midenFaucetId, midenNoteType: "P2ID" }`. Omitting `midenSourceAccount` flags the EVM→Miden direction. `buildResourceLockCalls`/`submitAllocation` require a resource-lock-enabled SDK build; contact Epoch.
+EVM→Miden dest: leg-2 `GetTokenOut` uses `outputTokenAddress` = zero address, `destinationChainId: "999999999"`, `extraDataTypestring: EVM_TO_MIDEN_EXTRA_TYPESTRING` (`string midenRecipientAccount,string midenFaucetId`), `extraData: { midenRecipientAccount, midenFaucetId }`. Omitting `midenSourceAccount` flags EVM→Miden. Withdraw leg uses `WITHDRAW_EXTRADATA_TYPESTRING` with `isAll: true` for full-position exits. `buildResourceLockCalls`/`submitAllocation` require a resource-lock-enabled SDK build; contact Epoch.
 
 ## What the SDK handles internally
 
@@ -1867,7 +1867,7 @@ There is **no EVM ERC-20 approval** for Miden-funded deposits. Collateral is the
 | Miden USDC faucet id | `0xfc90f0f4da30e51168453b60eafed7` | Default testnet faucet (6 decimals) |
 | Miden USDC decimals | **6** | Always use 6 for `tokenInAmount` and P2ID note amount |
 | EVM `tokenIn` sentinel | `0x0000000000000000000000000000000000000000` | Signals Miden source (not native ETH) |
-| `midenNoteType` | `P2IDE` | Reclaimable note; include `midenReclaimHeight` |
+| P2IDE reclaim window | Optional `midenReclaimHeight` in witness | Configured when creating the Miden note |
 | `protocolHashIdentifier` | `keccak256("dummy-lending")` | See Protocol hash |
 
 **Amount rule:** Miden-side amounts are **always in 6-decimal atomic units** (1 USDC = `1_000_000`). EVM market underlyings may use 18 decimals; Epoch converts internally during quoting. Do not scale Miden amounts to 18 decimals yourself.
@@ -1898,25 +1898,28 @@ Task type: `TaskType.ProtocolInteraction`.
 
 Core `intentData`: `depositTokenAddress` = `0x0000000000000000000000000000000000000000`; `tokenInAmount` = user input in Miden 6-dec atomic units; `outputTokenAddress` = market underlying ERC-20; `minTokenOut` = `"0"`; `destinationChainId` = market chain id string; `protocolHashIdentifier` = `keccak256(toBytes("dummy-lending"))`; `recipient` = user EVM address.
 
-`extraData` schema:
+`extraData` schema (field inclusion — compose lending + Miden suffixes):
 
 ```typescript
+import { DEPOSIT_EXTRADATA_TYPESTRING, MIDEN_TO_EVM_EXTRA_TYPESTRING } from "@epoch-protocol/epoch-intents-sdk";
+
 extraDataTypestring:
-  "string marketUid,string action,string payAsset," +
-  "string midenSourceAccount,string midenFaucetId," +
-  "string midenNoteType,string midenNoteId,uint256 midenReclaimHeight";
+  `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING},uint256 midenReclaimHeight`;
 
 extraData: {
   marketUid: "DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
   action: "deposit",
   payAsset: "0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
+  isAll: false,
   midenSourceAccount: "0x<user_miden_account_hex>",
   midenFaucetId: "0xfc90f0f4da30e51168453b60eafed7",
   midenNoteType: "P2IDE",
-  midenNoteId: "",                    // empty at quote time; filled after note creation
-  midenReclaimHeight: "1000",         // blocks until user can reclaim unused note
+  midenNoteId: "",
+  midenReclaimHeight: "1000",
 }
 ```
+
+Required Miden→EVM fields: `midenSourceAccount`, `midenFaucetId`, `midenNoteType`, `midenNoteId`. Same `witnessTypeString` is forwarded through quote, compact, and SIO.
 
 ## Origin chain override (required)
 
