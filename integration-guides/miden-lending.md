@@ -36,7 +36,7 @@ sequenceDiagram
 
   App->>MidenWallet: create P2IDE note → allocator account
   MidenWallet-->>App: noteId
-  App->>Allocator: POST /compact (mandate + noteId)
+  App->>Allocator: POST /compact (intent + noteId)
   Allocator->>SIO: execute intent
   SIO->>MidenWallet: consume note (out of band)
   SIO->>Solver: fill + deposit
@@ -45,7 +45,7 @@ sequenceDiagram
 
 | Layer               | Role                                                                                      |
 | ------------------- | ----------------------------------------------------------------------------------------- |
-| **Your app**        | Builds intent mandate, overrides origin chain to Miden, implements `createMidenP2IDNote`  |
+| **Your app**        | Builds intent data, overrides origin chain to Miden, implements `createMidenP2IDNote`  |
 | **Epoch allocator** | Quote (`/checkIfDepositNeeded`), submit (`/compact`), status                              |
 | **SIO**             | Multi-leg routing: `FillerSwapAndBridge` → `protocol-interaction` (deposit)               |
 | **Miden note**      | User collateral; recipient **must** be allocator P2ID account from `GET /miden-recipient` |
@@ -56,7 +56,7 @@ sequenceDiagram
 
 | Requirement             | Notes                                                                            |
 | ----------------------- | -------------------------------------------------------------------------------- |
-| **EVM wallet**          | Sponsor address on the intent mandate (`recipient` = same user EVM address)      |
+| **EVM wallet**          | Sponsor address on the intent (`recipient` = same user EVM address)      |
 | **Miden wallet**        | Must support sending a **public P2IDE** note to a hex account id                 |
 | **Epoch allocator URL** | Testnet e.g. `http://localhost:3000` or hosted allocator                         |
 | **Packages**            | `@epoch-protocol/epoch-intents-sdk`, `@epoch-protocol/epoch-commons-sdk`, `viem` |
@@ -79,7 +79,7 @@ npm install @epoch-protocol/epoch-intents-sdk @epoch-protocol/epoch-commons-sdk 
 | Miden USDC faucet id     | `0xfc90f0f4da30e51168453b60eafed7`           | Default testnet faucet (6 decimals)                      |
 | Miden USDC decimals      | **6**                                        | Always use 6 for `tokenInAmount` and P2ID note amount    |
 | EVM `tokenIn` sentinel   | `0x0000000000000000000000000000000000000000` | Signals Miden source (not native ETH)                    |
-| `midenNoteType`          | `P2IDE`                                      | Reclaimable note; include `midenReclaimHeight`           |
+| P2IDE reclaim window     | Set when creating the Miden note              | Not part of the signed witness; configured on note creation |
 | `protocolHashIdentifier` | `keccak256("dummy-lending")`                 | See [Protocol hash](#protocol-hash)                      |
 
 **Amount rule:** Miden-side amounts are **always in 6-decimal atomic units** (1 USDC = `1_000_000`). EVM market underlyings may use 18 decimals; Epoch converts internally during quoting. **Do not** scale Miden amounts to 18 decimals yourself.
@@ -121,11 +121,11 @@ DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69
 | `chainId`                | Chain where the lending market lives (`11155111`, `84532`, …) |
 | `underlyingTokenAddress` | ERC-20 deposited into the vault (lowercase ok)                |
 
-`destinationChainId` in the mandate must match the market chain. `outputTokenAddress` / `payAsset` must match the market underlying.
+`destinationChainId` in `intentData` must match the market chain. `outputTokenAddress` / `payAsset` must match the market underlying.
 
 ---
 
-## Intent mandate (lending deposit)
+## Intent fields (lending deposit)
 
 ### Task type
 
@@ -145,30 +145,39 @@ DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69
 
 ### `extraData` schema (lending + Miden)
 
+Miden bridge intents use **field inclusion**, not an exact suffix string. The witness must declare and include the required Miden → EVM fields (`midenSourceAccount`, `midenFaucetId`, `midenNoteType`, `midenNoteId`). Earn / lending fields may appear before or after the Miden block.
+
+Use the canonical constants exported from `@epoch-protocol/epoch-intents-sdk`:
+
 ```typescript
-extraDataTypestring:
-  "string marketUid,string action,string payAsset," +
-  "string midenSourceAccount,string midenFaucetId," +
-  "string midenNoteType,string midenNoteId,uint256 midenReclaimHeight";
+import {
+  DEPOSIT_EXTRADATA_TYPESTRING,
+  MIDEN_TO_EVM_EXTRA_TYPESTRING,
+} from "@epoch-protocol/epoch-intents-sdk";
+
+const extraDataTypestring =
+  `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING}`;
 
 extraData: {
   marketUid: "DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
   action: "deposit",
   payAsset: "0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
+  isAll: false,
   midenSourceAccount: "0x<user_miden_account_hex>",
   midenFaucetId: "0xfc90f0f4da30e51168453b60eafed7",
   midenNoteType: "P2IDE",
   midenNoteId: "",                    // empty at quote time; filled after note creation
-  midenReclaimHeight: "1000",         // blocks until user can reclaim unused note
 }
 ```
 
+> **Witness hashing:** Miden and earn fields use `string` (and `bool` / `uint256` where declared) in the typestring. The allocator hashes witness data with EIP-712, matching client signing. The same `witnessTypeString` is forwarded through quote (`/checkIfDepositNeeded`), compact submission, and SIO routing.
+
 | Miden field          | When set                                                                      |
 | -------------------- | ----------------------------------------------------------------------------- |
-| `midenSourceAccount` | Before quote — user's Miden account id (hex)                                  |
-| `midenFaucetId`      | Before quote — faucet id for the asset sent in the note                       |
-| `midenNoteId`        | **After** P2IDE creation — SDK writes this into the mandate before `/compact` |
-| `midenReclaimHeight` | Before quote — P2IDE reclaim window                                           |
+| `midenSourceAccount` | Before quote — user's Miden account id (hex, 15 bytes)                        |
+| `midenFaucetId`      | Before quote — faucet id for the asset sent in the note (hex, 15 bytes)       |
+| `midenNoteType`      | Before quote — use `P2IDE` for reclaimable collateral notes                   |
+| `midenNoteId`        | **After** P2IDE creation — SDK writes this into `intentData` before `/compact` |
 
 ---
 
@@ -201,6 +210,8 @@ import { TaskType } from "@epoch-protocol/epoch-commons-sdk";
 import {
   CollateralType,
   EpochIntentSDK,
+  DEPOSIT_EXTRADATA_TYPESTRING,
+  MIDEN_TO_EVM_EXTRA_TYPESTRING,
 } from "@epoch-protocol/epoch-intents-sdk";
 import { keccak256, parseUnits, toBytes } from "viem";
 
@@ -227,7 +238,7 @@ const sdk = new EpochIntentSDK({
 const sponsorAddress = evmUserAddress as `0x${string}`;
 const depositAmountHuman = "1"; // 1 Miden USDC
 
-// --- 2. Build mandate ---
+// --- 2. Build intent data ---
 const { taskTypeString, intentData } = await sdk.getTaskData({
   taskType: TaskType.ProtocolInteraction,
   intentData: {
@@ -244,18 +255,16 @@ const { taskTypeString, intentData } = await sdk.getTaskData({
     recipient: sponsorAddress,
   },
   extraDataTypestring:
-    "string marketUid,string action,string payAsset," +
-    "string midenSourceAccount,string midenFaucetId," +
-    "string midenNoteType,string midenNoteId,uint256 midenReclaimHeight",
+    `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING}`,
   extraData: {
     marketUid,
     action: "deposit",
     payAsset: underlying,
+    isAll: false,
     midenSourceAccount: midenUserAccountHex,
     midenFaucetId: MIDEN_USDC_FAUCET,
     midenNoteType: "P2IDE",
     midenNoteId: "",
-    midenReclaimHeight: "1000",
   },
 });
 
@@ -377,7 +386,7 @@ const earnMiden: EarnMidenAdapter = {
 />;
 ```
 
-The widget handles origin-chain override, mandate encoding, quote debouncing, and status polling internally.
+The widget handles origin-chain override, intent encoding, quote debouncing, and status polling internally.
 
 ---
 
@@ -413,9 +422,9 @@ Display `quote.tokenIn` formatted with **6 decimals** to the user before submit.
 - [ ] Recipient = `GET /miden-recipient` account id (allocator / SIO consumption target)
 - [ ] Faucet id matches `extraData.midenFaucetId`
 - [ ] Amount = SDK-provided `effectiveTokenInAmount` (from quote reverse path when applicable)
-- [ ] Note type **P2IDE** with reclaim height set in mandate
+- [ ] Note type **P2IDE** with reclaim height set on the note
 - [ ] Wait for note finalization on Miden before `/compact` (SDK waits ~12s by default)
-- [ ] `midenNoteId` written into mandate before submission
+- [ ] `midenNoteId` written into `intentData` before submission
 
 ---
 

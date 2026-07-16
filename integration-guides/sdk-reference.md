@@ -49,6 +49,10 @@ getTaskData(params: {
 
 **Validation:** Either `tokenInAmount` or `minTokenOut` must be non-zero.
 
+`extraDataTypestring` and `extraData` must declare the **same keys** with **no spaces around commas** (e.g. `uint256 foo,uint256 bar`, not `uint256 foo, uint256 bar`). Witness fields may use EIP-712 types including `string` (earn `marketUid` / `action`, Miden account ids, etc.). The allocator hashes witness data with EIP-712 `hashStruct`, matching client signing.
+
+See [Witness typestrings & Miden bridge](#witness-typestrings--miden-bridge) for Miden field rules and exported constants.
+
 ---
 
 ### `getIntentQuote(params)`
@@ -252,6 +256,65 @@ Full architecture, SIO relay flow, and test commands: [Transaction Batching & EI
 
 ---
 
+## Witness typestrings & Miden bridge
+
+`getTaskData` assembles a full `taskTypeString` (core intent fields + your `extraDataTypestring`). The allocator, SIO, and compact validation all receive that same `witnessTypeString` alongside `intentData`.
+
+### Canonical extra suffixes
+
+Import from `@epoch-protocol/epoch-intents-sdk` (re-exported from `@epoch-protocol/epoch-commons-sdk`):
+
+| Constant | Value | Use |
+| -------- | ----- | --- |
+| `MIDEN_TO_EVM_EXTRA_TYPESTRING` | `string midenSourceAccount,string midenFaucetId,string midenNoteType,string midenNoteId` | Miden → EVM bridge collateral |
+| `EVM_TO_MIDEN_EXTRA_TYPESTRING` | `string midenRecipientAccount,string midenFaucetId` | EVM → Miden delivery |
+| `DEPOSIT_EXTRADATA_TYPESTRING` | `string marketUid,string action,string payAsset,bool isAll` | Earn / lending deposit |
+| `WITHDRAW_EXTRADATA_TYPESTRING` | `string marketUid,string action,string payAsset,bool isAll` | Earn / lending withdraw |
+
+Compose lending + Miden by concatenating suffixes — protocol fields and Miden fields may appear in any order:
+
+```typescript
+import {
+  DEPOSIT_EXTRADATA_TYPESTRING,
+  MIDEN_TO_EVM_EXTRA_TYPESTRING,
+} from "@epoch-protocol/epoch-intents-sdk";
+
+const extraDataTypestring =
+  `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING}`;
+```
+
+### Miden field inclusion (not exact suffix matching)
+
+For Miden bridge intents, the witness must **declare and include** the required Miden fields for the detected direction. Additional protocol fields (earn `marketUid`, etc.) are allowed before or after the Miden block.
+
+| Direction | Required in `extraDataTypestring` + `extraData` | Direction signal |
+| --------- | ------------------------------------------------- | ---------------- |
+| **Miden → EVM** | `midenSourceAccount`, `midenFaucetId`, `midenNoteType`, `midenNoteId` | `midenSourceAccount` set |
+| **EVM → Miden** | `midenRecipientAccount`, `midenFaucetId` | `midenRecipientAccount` set and `midenSourceAccount` absent |
+
+Do **not** set both `midenSourceAccount` and `midenRecipientAccount` on the same intent.
+
+### Shared Miden helpers
+
+Also exported from the SDK for client-side checks:
+
+```typescript
+import {
+  isMidenIntent,
+  isEVMToMidenIntent,
+  isMidenToEvmIntent,
+  getMidenMetadata,
+} from "@epoch-protocol/epoch-intents-sdk";
+
+// At least one of typestring or data must be provided
+isMidenIntent(taskTypeString, intentData);
+isEVMToMidenIntent(intentData); // recipient set, source absent
+```
+
+The allocator uses the same helpers from `epoch-commons-sdk` when routing Miden intents through quote, compact validation, and SIO.
+
+---
+
 ## Task types
 
 Import from `@epoch-protocol/epoch-commons-sdk`:
@@ -288,7 +351,19 @@ import { TaskType } from "@epoch-protocol/epoch-commons-sdk";
 const sdk = new EpochIntentSDK({ apiBaseUrl, walletClient });
 
 // 1 — withdraw position → underlying (direct calldata)
-const wTask  = await sdk.getTaskData({ taskType: TaskType.ProtocolInteraction, intentData: withdrawIntent });
+import { WITHDRAW_EXTRADATA_TYPESTRING } from "@epoch-protocol/epoch-intents-sdk";
+
+const wTask = await sdk.getTaskData({
+  taskType: TaskType.ProtocolInteraction,
+  intentData: withdrawIntent,
+  extraDataTypestring: WITHDRAW_EXTRADATA_TYPESTRING,
+  extraData: {
+    marketUid,
+    action: "withdraw",
+    payAsset: underlyingAddress,
+    isAll: false, // set true to withdraw the entire position
+  },
+});
 const wQuote = await sdk.getIntentQuote({ sponsorAddress, taskTypeString: wTask.taskTypeString, intentData: wTask.intentData, isNative: false });
 const withdrawTxs = wQuote.transactions;                     // withdraw(token, amount)
 
@@ -323,6 +398,8 @@ const { nonce } = await sdk.submitAllocation(createAllocationRequest);
 **Miden destination.** For EVM→Miden, build the leg-2 `GetTokenOut` like the [Miden → EVM Lending](miden-lending.md) bridge shape — the EVM output slot is the zero sentinel and the real target rides in `extraData`:
 
 ```typescript
+import { EVM_TO_MIDEN_EXTRA_TYPESTRING } from "@epoch-protocol/epoch-intents-sdk";
+
 const swapIntent = {
   isNative: false,
   depositTokenAddress: underlyingAddress,
@@ -333,11 +410,11 @@ const swapIntent = {
   protocolHashIdentifier: "0x000…0",                                // ZERO_BYTES32
   recipient: sponsorAddress,
 };
-const extraDataTypestring = "string midenRecipientAccount,string midenFaucetId,string midenNoteType";
-const extraData = { midenRecipientAccount, midenFaucetId, midenNoteType: "P2ID" };
+const extraDataTypestring = EVM_TO_MIDEN_EXTRA_TYPESTRING;
+const extraData = { midenRecipientAccount, midenFaucetId };
 ```
 
-Omitting `midenSourceAccount` is what flags the **EVM→Miden** direction to the allocator.
+Omitting `midenSourceAccount` is what flags the **EVM→Miden** direction to the allocator. You may append additional declared fields after the canonical Miden suffix when needed.
 
 **Availability.** Everything except `buildResourceLockCalls` / `submitAllocation` is in the standard SDK. Those two are the resource-lock **build-don't-send** helpers (see [Compact-related methods](#compact-related-methods)); confirm your `@epoch-protocol/epoch-intents-sdk` build exposes them before shipping, and contact Epoch to enable Compact resource-lock flows.
 

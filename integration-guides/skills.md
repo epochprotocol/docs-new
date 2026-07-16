@@ -278,7 +278,7 @@ See [Gasless Deposits](gasless-deposits.md), [Transaction Batching & EIP-7702](t
 | --------------- | ------------------------------ | ------------------------------- |
 | Swap / bridge   | `TaskType.GetTokenOut`         | Cross-chain token output        |
 | Protocol action | `TaskType.ProtocolInteraction` | NFT buy, raffle, lending, etc.  |
-| Deposit only    | `TaskType.Deposit`             | Lock funds without swap mandate |
+| Deposit only    | `TaskType.Deposit`             | Lock funds without a swap intent |
 
 ## Key SDK Exports
 
