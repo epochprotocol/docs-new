@@ -258,7 +258,7 @@ Full architecture, SIO relay flow, and test commands: [Transaction Batching & EI
 
 ## Witness typestrings & Miden bridge
 
-`getTaskData` assembles a full `taskTypeString` (base mandate fields + your `extraDataTypestring`). The allocator, SIO, and compact validation all receive that same `witnessTypeString` alongside mandate data.
+`getTaskData` assembles a full `taskTypeString` (core intent fields + your `extraDataTypestring`). The allocator, SIO, and compact validation all receive that same `witnessTypeString` alongside `intentData`.
 
 ### Canonical extra suffixes
 

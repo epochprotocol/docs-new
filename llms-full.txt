@@ -1482,7 +1482,7 @@ const { allocatorAddress, chainConfig } = health;
 | --------------- | ------------------------------ | -------- |
 | Swap / bridge   | `TaskType.GetTokenOut`         | Cross-chain token output |
 | Protocol action | `TaskType.ProtocolInteraction` | NFT buy, raffle, lending, etc. |
-| Deposit only    | `TaskType.Deposit`             | Lock funds without swap mandate |
+| Deposit only    | `TaskType.Deposit`             | Lock funds without a swap intent |
 
 ## Key SDK Exports
 
@@ -1890,9 +1890,9 @@ DUMMY_LENDING:{chainId}:{underlyingTokenAddress}
 
 Example (USDC market on Ethereum Sepolia): `DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69`
 
-`destinationChainId` in the mandate must match the market chain. `outputTokenAddress` / `payAsset` must match the market underlying.
+`destinationChainId` in `intentData` must match the market chain. `outputTokenAddress` / `payAsset` must match the market underlying.
 
-## Intent mandate (lending deposit)
+## Intent fields (lending deposit)
 
 Task type: `TaskType.ProtocolInteraction`.
 
@@ -1979,7 +1979,7 @@ Quote request body includes `"chainId": "999999999"` for Miden-origin intents.
 
 ## Widget option
 
-Use `@epoch-protocol/epoch-intent-widget` in `mode="earn"` and inject an `earnMiden` adapter (implements `connect`, `createP2IDNote`, asset list, `reclaimHeight`). The widget handles origin-chain override, mandate encoding, quote debouncing, and status polling internally.
+Use `@epoch-protocol/epoch-intent-widget` in `mode="earn"` and inject an `earnMiden` adapter (implements `connect`, `createP2IDNote`, asset list, `reclaimHeight`). The widget handles origin-chain override, intent encoding, quote debouncing, and status polling internally.
 
 ## Common failures
 * Route shows Sepolia -> Sepolia: missing `walletClient.chain.id = 999999999` override.

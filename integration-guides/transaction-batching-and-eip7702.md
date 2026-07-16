@@ -219,7 +219,7 @@ The SDK POSTs to `/relay-deposit` with (simplified):
   executionData: hex,                       // redeemDelegations calldata
   sponsorSignature: hex,                    // EIP-712 "The Compact" v1
   witnessTypeString: string,
-  compact: { arbiter, sponsor, nonce, expires, id, lockTag, token, amount, mandate? },
+  compact: { arbiter, sponsor, nonce, expires, id, lockTag, token, amount, intentData? },
   claimHash: hex,
 }
 ```

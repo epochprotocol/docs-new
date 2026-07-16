@@ -36,7 +36,7 @@ sequenceDiagram
 
   App->>MidenWallet: create P2IDE note → allocator account
   MidenWallet-->>App: noteId
-  App->>Allocator: POST /compact (mandate + noteId)
+  App->>Allocator: POST /compact (intent + noteId)
   Allocator->>SIO: execute intent
   SIO->>MidenWallet: consume note (out of band)
   SIO->>Solver: fill + deposit
@@ -45,7 +45,7 @@ sequenceDiagram
 
 | Layer               | Role                                                                                      |
 | ------------------- | ----------------------------------------------------------------------------------------- |
-| **Your app**        | Builds intent mandate, overrides origin chain to Miden, implements `createMidenP2IDNote`  |
+| **Your app**        | Builds intent data, overrides origin chain to Miden, implements `createMidenP2IDNote`  |
 | **Epoch allocator** | Quote (`/checkIfDepositNeeded`), submit (`/compact`), status                              |
 | **SIO**             | Multi-leg routing: `FillerSwapAndBridge` → `protocol-interaction` (deposit)               |
 | **Miden note**      | User collateral; recipient **must** be allocator P2ID account from `GET /miden-recipient` |
@@ -56,7 +56,7 @@ sequenceDiagram
 
 | Requirement             | Notes                                                                            |
 | ----------------------- | -------------------------------------------------------------------------------- |
-| **EVM wallet**          | Sponsor address on the intent mandate (`recipient` = same user EVM address)      |
+| **EVM wallet**          | Sponsor address on the intent (`recipient` = same user EVM address)      |
 | **Miden wallet**        | Must support sending a **public P2IDE** note to a hex account id                 |
 | **Epoch allocator URL** | Testnet e.g. `http://localhost:3000` or hosted allocator                         |
 | **Packages**            | `@epoch-protocol/epoch-intents-sdk`, `@epoch-protocol/epoch-commons-sdk`, `viem` |
@@ -121,11 +121,11 @@ DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69
 | `chainId`                | Chain where the lending market lives (`11155111`, `84532`, …) |
 | `underlyingTokenAddress` | ERC-20 deposited into the vault (lowercase ok)                |
 
-`destinationChainId` in the mandate must match the market chain. `outputTokenAddress` / `payAsset` must match the market underlying.
+`destinationChainId` in `intentData` must match the market chain. `outputTokenAddress` / `payAsset` must match the market underlying.
 
 ---
 
-## Intent mandate (lending deposit)
+## Intent fields (lending deposit)
 
 ### Task type
 
@@ -177,7 +177,7 @@ extraData: {
 | `midenSourceAccount` | Before quote — user's Miden account id (hex, 15 bytes)                        |
 | `midenFaucetId`      | Before quote — faucet id for the asset sent in the note (hex, 15 bytes)       |
 | `midenNoteType`      | Before quote — use `P2IDE` for reclaimable collateral notes                   |
-| `midenNoteId`        | **After** P2IDE creation — SDK writes this into the mandate before `/compact` |
+| `midenNoteId`        | **After** P2IDE creation — SDK writes this into `intentData` before `/compact` |
 
 ---
 
@@ -238,7 +238,7 @@ const sdk = new EpochIntentSDK({
 const sponsorAddress = evmUserAddress as `0x${string}`;
 const depositAmountHuman = "1"; // 1 Miden USDC
 
-// --- 2. Build mandate ---
+// --- 2. Build intent data ---
 const { taskTypeString, intentData } = await sdk.getTaskData({
   taskType: TaskType.ProtocolInteraction,
   intentData: {
@@ -386,7 +386,7 @@ const earnMiden: EarnMidenAdapter = {
 />;
 ```
 
-The widget handles origin-chain override, mandate encoding, quote debouncing, and status polling internally.
+The widget handles origin-chain override, intent encoding, quote debouncing, and status polling internally.
 
 ---
 
@@ -422,9 +422,9 @@ Display `quote.tokenIn` formatted with **6 decimals** to the user before submit.
 - [ ] Recipient = `GET /miden-recipient` account id (allocator / SIO consumption target)
 - [ ] Faucet id matches `extraData.midenFaucetId`
 - [ ] Amount = SDK-provided `effectiveTokenInAmount` (from quote reverse path when applicable)
-- [ ] Note type **P2IDE** with reclaim height set in mandate
+- [ ] Note type **P2IDE** with reclaim height set on the note
 - [ ] Wait for note finalization on Miden before `/compact` (SDK waits ~12s by default)
-- [ ] `midenNoteId` written into mandate before submission
+- [ ] `midenNoteId` written into `intentData` before submission
 
 ---
 
