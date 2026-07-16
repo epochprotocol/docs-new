@@ -280,12 +280,12 @@ import {
 } from "@epoch-protocol/epoch-intents-sdk";
 
 const extraDataTypestring =
-  `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING},uint256 midenReclaimHeight`;
+  `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING}`;
 ```
 
 ### Miden field inclusion (not exact suffix matching)
 
-For Miden bridge intents, the witness must **declare and include** the required Miden fields for the detected direction. Additional protocol fields (earn `marketUid`, `midenReclaimHeight`, etc.) are allowed before or after the Miden block.
+For Miden bridge intents, the witness must **declare and include** the required Miden fields for the detected direction. Additional protocol fields (earn `marketUid`, etc.) are allowed before or after the Miden block.
 
 | Direction | Required in `extraDataTypestring` + `extraData` | Direction signal |
 | --------- | ------------------------------------------------- | ---------------- |

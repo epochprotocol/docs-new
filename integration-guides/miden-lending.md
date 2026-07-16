@@ -79,7 +79,7 @@ npm install @epoch-protocol/epoch-intents-sdk @epoch-protocol/epoch-commons-sdk 
 | Miden USDC faucet id     | `0xfc90f0f4da30e51168453b60eafed7`           | Default testnet faucet (6 decimals)                      |
 | Miden USDC decimals      | **6**                                        | Always use 6 for `tokenInAmount` and P2ID note amount    |
 | EVM `tokenIn` sentinel   | `0x0000000000000000000000000000000000000000` | Signals Miden source (not native ETH)                    |
-| P2IDE reclaim window     | Set when creating the Miden note              | Optional `midenReclaimHeight` in witness; configured on note creation |
+| P2IDE reclaim window     | Set when creating the Miden note              | Not part of the signed witness; configured on note creation |
 | `protocolHashIdentifier` | `keccak256("dummy-lending")`                 | See [Protocol hash](#protocol-hash)                      |
 
 **Amount rule:** Miden-side amounts are **always in 6-decimal atomic units** (1 USDC = `1_000_000`). EVM market underlyings may use 18 decimals; Epoch converts internally during quoting. **Do not** scale Miden amounts to 18 decimals yourself.
@@ -145,7 +145,7 @@ DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69
 
 ### `extraData` schema (lending + Miden)
 
-Miden bridge intents use **field inclusion**, not an exact suffix string. The witness must declare and include the required Miden → EVM fields (`midenSourceAccount`, `midenFaucetId`, `midenNoteType`, `midenNoteId`). Earn / lending fields and optional extras such as `midenReclaimHeight` may appear before or after the Miden block.
+Miden bridge intents use **field inclusion**, not an exact suffix string. The witness must declare and include the required Miden → EVM fields (`midenSourceAccount`, `midenFaucetId`, `midenNoteType`, `midenNoteId`). Earn / lending fields may appear before or after the Miden block.
 
 Use the canonical constants exported from `@epoch-protocol/epoch-intents-sdk`:
 
@@ -156,7 +156,7 @@ import {
 } from "@epoch-protocol/epoch-intents-sdk";
 
 const extraDataTypestring =
-  `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING},uint256 midenReclaimHeight`;
+  `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING}`;
 
 extraData: {
   marketUid: "DUMMY_LENDING:11155111:0x2bb4ffd7e2c6d432b697554efd77fa13bdbefd69",
@@ -167,7 +167,6 @@ extraData: {
   midenFaucetId: "0xfc90f0f4da30e51168453b60eafed7",
   midenNoteType: "P2IDE",
   midenNoteId: "",                    // empty at quote time; filled after note creation
-  midenReclaimHeight: "1000",         // optional — P2IDE reclaim window in blocks
 }
 ```
 
@@ -179,7 +178,6 @@ extraData: {
 | `midenFaucetId`      | Before quote — faucet id for the asset sent in the note (hex, 15 bytes)       |
 | `midenNoteType`      | Before quote — use `P2IDE` for reclaimable collateral notes                   |
 | `midenNoteId`        | **After** P2IDE creation — SDK writes this into the mandate before `/compact` |
-| `midenReclaimHeight` | Optional — reclaim window in blocks when using P2IDE                          |
 
 ---
 
@@ -257,7 +255,7 @@ const { taskTypeString, intentData } = await sdk.getTaskData({
     recipient: sponsorAddress,
   },
   extraDataTypestring:
-    `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING},uint256 midenReclaimHeight`,
+    `${DEPOSIT_EXTRADATA_TYPESTRING},${MIDEN_TO_EVM_EXTRA_TYPESTRING}`,
   extraData: {
     marketUid,
     action: "deposit",
@@ -267,7 +265,6 @@ const { taskTypeString, intentData } = await sdk.getTaskData({
     midenFaucetId: MIDEN_USDC_FAUCET,
     midenNoteType: "P2IDE",
     midenNoteId: "",
-    midenReclaimHeight: "1000",
   },
 });
 
