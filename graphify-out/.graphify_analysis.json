@@ -1,0 +1,29 @@
+{
+  "communities": {
+    "0": [
+      "scripts_injected_wallet_batch_probe",
+      "scripts_injected_wallet_batch_probe_probeinjectedwalletbatching",
+      "scripts_injected_wallet_batch_probe_solvewithinjectedwalletbatching"
+    ]
+  },
+  "cohesion": {
+    "0": 1.0
+  },
+  "gods": [
+    {
+      "id": "scripts_injected_wallet_batch_probe_probeinjectedwalletbatching",
+      "label": "probeInjectedWalletBatching()",
+      "degree": 2
+    },
+    {
+      "id": "scripts_injected_wallet_batch_probe_solvewithinjectedwalletbatching",
+      "label": "solveWithInjectedWalletBatching()",
+      "degree": 2
+    }
+  ],
+  "surprises": [],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}

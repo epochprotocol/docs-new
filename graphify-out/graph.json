@@ -1,0 +1,77 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "id": "scripts_injected_wallet_batch_probe_probeinjectedwalletbatching",
+      "label": "probeInjectedWalletBatching()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "probeinjectedwalletbatching()",
+      "source_file": "scripts/injected-wallet-batch-probe.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "scripts_injected_wallet_batch_probe_solvewithinjectedwalletbatching",
+      "label": "solveWithInjectedWalletBatching()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "solvewithinjectedwalletbatching()",
+      "source_file": "scripts/injected-wallet-batch-probe.ts",
+      "source_location": "L86"
+    },
+    {
+      "id": "scripts_injected_wallet_batch_probe",
+      "label": "injected-wallet-batch-probe.ts",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "injected-wallet-batch-probe.ts",
+      "source_file": "scripts/injected-wallet-batch-probe.ts",
+      "source_location": "L1"
+    }
+  ],
+  "links": [
+    {
+      "source": "scripts_injected_wallet_batch_probe_solvewithinjectedwalletbatching",
+      "target": "scripts_injected_wallet_batch_probe_probeinjectedwalletbatching",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scripts/injected-wallet-batch-probe.ts",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_injected_wallet_batch_probe",
+      "target": "scripts_injected_wallet_batch_probe_probeinjectedwalletbatching",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/injected-wallet-batch-probe.ts",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_injected_wallet_batch_probe",
+      "target": "scripts_injected_wallet_batch_probe_solvewithinjectedwalletbatching",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/injected-wallet-batch-probe.ts",
+      "source_location": "L86",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "8ce9cb0891ca920078c8ae0be1ac698935d166bb"
+}
