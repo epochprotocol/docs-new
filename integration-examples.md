@@ -35,7 +35,9 @@ Best for: backend scripts, CI smoke tests, understanding the SDK flow before bui
 **Type:** React + Vite + wagmi  
 **Repo:** [github.com/Man-Jain/compact-demo-epoch](https://github.com/Man-Jain/compact-demo-epoch)
 
-Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queries, and withdrawals.
+Full-featured web UI demonstrating swap, bridge, Compact deposits, balance
+queries, withdrawals, external-provider selection (Khalani, NEAR Intents,
+LI.FI, and Sodax), and preferred Uniswap v4 pool routes.
 
 | File | Purpose |
 |------|---------|
@@ -44,10 +46,13 @@ Full-featured web UI demonstrating swap, bridge, Compact deposits, balance queri
 | `src/config/api.ts` | `VITE_API_BASE_URL` helper |
 | `src/hooks/useAllocatorAPI.ts` | Health check, allocator address |
 | `src/pages/BalancePage.tsx` | Full swap flow: routing preset picker, quote → solve → status |
+| `src/config/dex-pools.ts` | Signed external-provider and preferred-v4-pool route configuration |
 | `src/components/UserBalancesList.tsx` | `getDepositedBalances` |
 | `src/components/WalletWithdrawDialog.tsx` | Forced withdrawal flow |
 
 Best for: React apps with wallet connection, swap/bridge UI patterns, Compact balance management.
+
+See [Swap & Bridge Integration](integration-guides/swap-and-bridge.md#pin-an-external-provider-and-a-preferred-uniswap-v4-pool) for the signed provider and v4 PoolKey example.
 
 ---
 

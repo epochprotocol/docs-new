@@ -129,6 +129,77 @@ See [SDK Reference](./sdk-reference.md#getintentquoteparams).
 
 ***
 
+## Pin an external provider and a preferred Uniswap v4 pool
+
+An application can constrain an external provider, destination pool, or both
+through signed `extraData`. The signed fields survive the Compact witness, so
+the selected provider and `PoolKey` used for quoting are the same ones used for
+execution.
+
+This Base Sepolia example chooses Sodax and a hooked Test USDC/Test USDT v4
+fixture. It accepts any supported source asset, such as WETH on another chain:
+the provider is quoted to the other PoolKey currency, then the destination v4
+plan swaps that currency to the final output.
+
+```typescript
+import {
+  DEX_POOLS_EXTRA_TYPESTRING,
+  encodeDexPools,
+  EXTERNAL_PROVIDER_EXTRA_TYPESTRING,
+  type DexPoolPreference,
+} from "@epoch-protocol/epoch-commons-sdk";
+
+const provider = "sodax" as const;
+const destinationChainId = "84532"; // Base Sepolia
+const sourceWethAddress = "<WETH address on the source chain>";
+
+const pool = {
+  protocol: "uniswap-v4",
+  chainId: 84532,
+  poolKey: {
+    currency0: "0x2BB4FfD7E2c6D432b697554Efd77fA13bdbefd69", // Test USDC
+    currency1: "0xc04d2869665Be874881133943523723Be5782720", // Test USDT
+    fee: 3000,
+    tickSpacing: 60,
+    hooks: "0xf892b81907d2b466E2bc469fD1097eb9424B40c0",
+  },
+  hookData:
+    "0x70518dc220115fec722d1c344e307ec149ec2f25dc54c87a8908cb22e29867d1",
+} satisfies DexPoolPreference;
+
+const extraDataTypestring = [
+  EXTERNAL_PROVIDER_EXTRA_TYPESTRING,
+  DEX_POOLS_EXTRA_TYPESTRING,
+].join(",");
+const extraData = { provider, dexPools: encodeDexPools([pool]) };
+
+const quote = await sdk.getIntentQuote({
+  sponsorAddress,
+  taskTypeString,
+  intentData: {
+    depositTokenAddress: sourceWethAddress,
+    outputTokenAddress: pool.poolKey.currency1,
+    destinationChainId,
+    // Remaining task fields are configured as in the SDK Integration Guide.
+  },
+  extraDataTypestring,
+  extraData,
+  routingAndLiquidityOptions: { preset: "external-multi-transactions" },
+});
+```
+
+For this example, the external provider delivers Test USDC on Base Sepolia and
+the returned destination plan swaps Test USDC to Test USDT through the exact
+hooked PoolKey. The source WETH is never treated as a v4 pool currency.
+
+`PoolKey` identifies a v4 pool; there is no standalone v4 pool address. The
+currencies must be sorted, `hookData` must match the hook's requirements, and
+the pool's `chainId` must equal `destinationChainId`. Omit `provider` to compare
+enabled external providers, or omit both signed preferences to use ordinary
+automatic routing and v3 fallback.
+
+***
+
 ## Chain and token selection
 
 * Source chain: where the user's wallet is connected and input tokens exist.
